@@ -282,7 +282,12 @@ html {
 }
 
 body {
-  background: var(--bg);
+  background-image: url('/grainy-bg.webp');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: var(--bg);
   color: var(--ink);
   font-family: var(--body-font);
   font-weight: 400;

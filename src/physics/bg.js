@@ -189,6 +189,12 @@
     ctx.fillRect(0, 0, W, H);
   }
 
+  /* ---------- grainy background image ---------- */
+  var grainyImg = new Image();
+  grainyImg.src = "/grainy-bg.webp";
+  var grainyLoaded = false;
+  grainyImg.onload = function () { grainyLoaded = true; };
+
   /* ---------- ultra-fine warm film grain & amber diagonal light ---------- */
   var grainParticles = [];
   var shootingStars = [];
@@ -230,9 +236,23 @@
   }
 
   function drawStars(now) {
-    // 1. Deep warm brown-black base color
-    ctx.fillStyle = "#090807";
-    ctx.fillRect(0, 0, W, H);
+    // 1. Grainy background image as base (cover fit)
+    if (grainyLoaded && grainyImg.width) {
+      var imgRatio = grainyImg.width / grainyImg.height;
+      var canvasRatio = W / H;
+      var dw, dh, dx, dy;
+      if (canvasRatio > imgRatio) {
+        dw = W; dh = W / imgRatio;
+        dx = 0; dy = (H - dh) / 2;
+      } else {
+        dh = H; dw = H * imgRatio;
+        dx = (W - dw) / 2; dy = 0;
+      }
+      ctx.drawImage(grainyImg, dx, dy, dw, dh);
+    } else {
+      ctx.fillStyle = "#090807";
+      ctx.fillRect(0, 0, W, H);
+    }
 
     var mouseShiftX = (smx - W / 2) * 0.08;
     var mouseShiftY = (smy - H / 2) * 0.08;
