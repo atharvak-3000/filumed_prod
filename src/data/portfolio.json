@@ -1,0 +1,84 @@
+{
+  "googleSheetUrl": "",
+  "featured": {
+    "title": "Showreel 2026",
+    "client": "Filumed Productions",
+    "tag": "Showreel 2026",
+    "youtube": "ScMzIvxBSi4",
+    "ratio": "r219"
+  },
+  "items": [
+    {
+      "title": "After the Storm",
+      "client": "Solaris / Festival",
+      "category": "events",
+      "size": "wide",
+      "ratio": "r169",
+      "youtube": "pS9m_B70N_M"
+    },
+    {
+      "title": "First Light",
+      "client": "Aster / Brand",
+      "category": "brand-content",
+      "size": "narrow",
+      "ratio": "r169",
+      "youtube": "EngW7tLk6R8"
+    },
+    {
+      "title": "Acoustic Sessions",
+      "client": "Verve / Concert",
+      "category": "concert",
+      "size": "narrow",
+      "ratio": "r169",
+      "youtube": "33D2hQxYgX0"
+    },
+    {
+      "title": "Behind the Lens",
+      "client": "The Daily Byte / Podcast",
+      "category": "podcast",
+      "size": "wide",
+      "ratio": "r169",
+      "youtube": "9p9E4D_3JcM"
+    },
+    {
+      "title": "A Silent Resonance",
+      "client": "Studio Cine / Narrative",
+      "category": "short-film",
+      "size": "wide",
+      "ratio": "r169",
+      "youtube": "k31aD7GfAew"
+    },
+    {
+      "title": "Kinetic Energy",
+      "client": "Volt / Campaign",
+      "category": "products",
+      "size": "narrow",
+      "ratio": "r169",
+      "youtube": "j1yZ1O0bSfs"
+    },
+    {
+      "title": "Concrete & Sky",
+      "client": "Aura Living / Design",
+      "category": "hospitality-real-estate",
+      "size": "narrow",
+      "ratio": "r169",
+      "youtube": "g4E1Xk24Dts"
+    },
+    {
+      "title": "Sizzle & Smoke",
+      "client": "Mise En Place / Gastronomy",
+      "category": "fb",
+      "size": "wide",
+      "ratio": "r169",
+      "youtube": "210Qk4x4Xh8"
+    },
+    {
+      "title": "The Endless Ridge",
+      "client": "Wilderness / Expedition",
+      "category": "documentary-travel",
+      "size": "full",
+      "ratio": "r219",
+      "youtube": "tD5B2HqP4wE"
+    }
+  ]
+}

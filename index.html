@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Filumed Productions is a creative video production company specializing in commercials, branded content, podcasts, and cinematic storytelling.">
+  <title>FILUMED — Film &amp; Video Production</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Raleway:ital,wght@0,100..900;1,100..900&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/tengbao/vanta/dist/vanta.fog.min.js"></script>
+</head>
+
+<body data-dir="editorial">
+
+  <!-- ================= LOADER ================= -->
+  <div id="loader" data-screen-label="Loader">
+    <div class="leader">
+      <div class="sweep"></div>
+      <div class="ring"></div>
+      <div class="cross-h"></div>
+      <div class="cross-v"></div>
+      <div class="num">3</div>
+    </div>
+    <!-- Cinematic Reveal Screen -->
+    <div class="cinematic-reveal">
+      <div class="projector-beam"></div>
+      <div class="loader-grain"></div>
+      <svg class="loader-logo-img" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg" overflow="visible"
+        aria-label="FILUMED PRODUCTION">
+        <defs>
+          <style>
+            .cls-1 {
+              letter-spacing: .25em;
+            }
+
+            .cls-2,
+            .cls-3 {
+              fill: #fff;
+            }
+
+            .cls-4 {
+              letter-spacing: .23em;
+            }
+
+            .cls-5 {
+              fill: #fff;
+              font-family: NHaasGroteskDSPro-65Md, 'Neue Haas Grotesk Display Pro';
+              font-size: 73px;
+              font-weight: 500;
+            }
+
+            .cls-3 {
+              stroke: #fff;
+              stroke-miterlimit: 10;
+              stroke-width: 2px;
+            }
+          </style>
+        </defs>
+        <rect class="cls-3" x="197.19" y="306.33" width="685.61" height="464.02" rx="37.76" ry="37.76" />
+        <path fill="#0d0d0c"
+          d="M864.1,363.42v45.72c0-53.77-31.7-83.05-85.62-83.05h-27.96v-.16h76.15c20.66,0,37.43,16.79,37.43,37.49Z" />
+        <path fill="#0d0d0c"
+          d="M864.1,624.5v-45.72c0,53.77-31.7,83.05-85.62,83.05h-27.96v.16h76.15c20.66,0,37.43-16.79,37.43-37.49Z" />
+        <path fill="#0d0d0c"
+          d="M204.44,660.86h671.12v67.07c0,19.33-15.69,35.02-35.02,35.02H239.46c-19.33,0-35.02-15.69-35.02-35.02v-67.07h0Z" />
+        <path fill="#0d0d0c"
+          d="M778.48,325.93h-96.54v336.06h96.54c9.42,0,18.15-.89,26.17-2.64,37.85-8.33,59.45-36.04,59.45-80.41v-169.96c0-53.77-31.7-83.05-85.62-83.05ZM802.24,572c0,21.44-10.3,29.16-27.45,29.16h-30.4v-214.39h33.11c2.64,0,5.06.19,7.27.57,12.05,2.14,17.47,10.46,17.47,28.58v156.07Z" />
+        <path fill="#0d0d0c"
+          d="M217.5,662.49v-298.65c0-20.67,16.75-37.42,37.42-37.42h76.15v61.45h-52.19v74.89h53.16v61.45h-55.09v138.75l-59.44-.48Z" />
+        <path fill="#0d0d0c" d="M400.54,326.19v276.05h52.19v60.97h-112.12v-336.54l59.92-.48Z" />
+        <path fill="#0d0d0c"
+          d="M461.34,662.73v-336.07h77.32l28.03,172.83,27.54-172.83h78.77v336.54h-62.82v-162.27l-27.54,161.79h-32.38l-27.55-160.35v160.35h-61.37Z" />
+        <path class="cls-2" d="M649.11,323h52.83v47.35l-23.92,55.33h-22.43l14.45-49.84h-20.94v-52.83Z" />
+        <text class="cls-5" transform="translate(227.6 739.77)">
+          <tspan class="cls-1" x="0" y="0">PRODU</tspan>
+          <tspan class="cls-4" x="336.09" y="0">C</tspan>
+          <tspan class="cls-1" x="402.81" y="0">TION</tspan>
+        </text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ================= CURSOR ================= -->
+  <div class="cursor-dot" style="display:none"></div>
+  <div class="cursor-ring" style="display:none"></div>
+  <div class="cursor-tag">Play</div>
+
+  <div class="progress-bar"></div>
+  <div class="grain"></div>
+
+  <div class="grid-lines"></div>
+
+  <!-- ================= NAV ================= -->
+  <header class="nav" data-screen-label="Navigation">
+    <a class="logo" href="#home" aria-label="FILUMED home">
+      <img class="logo-img" src="/filumed-logo.svg" alt="Filumed Productions logo" />
+    </a>
+    <nav class="nav-links">
+      <a class="navlink" href="#home">Home</a>
+      <a class="navlink" href="#about">About</a>
+      <a class="navlink" href="#services">Services</a>
+      <a class="navlink" href="#work">Work</a>
+      <a class="btn btn-solid" href="#contact">Get in touch</a>
+    </nav>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero wrap" id="home" data-screen-label="Hero">
+    <div class="hero-inner">
+      <div class="mono kicker rv">Filumed Productions &mdash; Creative Video Studio</div>
+      <h1 class="display">
+        <span class="mask-line rv"><span>Brands talk,</span></span>
+        <span class="mask-line rv l2"><span class="l2">we make sure people listen!</span></span>
+      </h1>
+      <p class="sub rv" style="max-width: 680px;">We are a creative video production company helping brands, businesses,
+        and creators bring their stories to life through high-quality visuals and strategic cinematic storytelling.</p>
+      <div class="hero-cta rv">
+        <a class="btn btn-solid" href="#work">See the work <span class="arr">&rarr;</span></a>
+        <a class="btn btn-ghost" href="#services">What we do</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MARQUEE ================= -->
+  <div class="marquee-wrap" data-screen-label="Services ticker" aria-hidden="true">
+    <div class="marquee-tilt">
+      <div class="marquee">
+        <div class="marquee-track">
+          <span class="item">Brand Films</span><span class="dot"></span>
+          <span class="item">TV Commercials</span><span class="dot"></span>
+          <span class="item">Social Reels</span><span class="dot"></span>
+          <span class="item">Music Videos</span><span class="dot"></span>
+          <span class="item">Documentary</span><span class="dot"></span>
+          <span class="item">Motion Graphics</span><span class="dot"></span>
+          <span class="item">Events</span><span class="dot"></span>
+          <span class="item">Brand Films</span><span class="dot"></span>
+          <span class="item">TV Commercials</span><span class="dot"></span>
+          <span class="item">Social Reels</span><span class="dot"></span>
+          <span class="item">Music Videos</span><span class="dot"></span>
+          <span class="item">Documentary</span><span class="dot"></span>
+          <span class="item">Motion Graphics</span><span class="dot"></span>
+          <span class="item">Events</span><span class="dot"></span>
+        </div>
+      </div>
+      <div class="marquee rev">
+        <div class="marquee-track">
+          <span class="item">Shot on location</span><span class="dot"></span>
+          <span class="item">Cut with intent</span><span class="dot"></span>
+          <span class="item">Graded to taste</span><span class="dot"></span>
+          <span class="item">Delivered on time</span><span class="dot"></span>
+          <span class="item">Est. 2019</span><span class="dot"></span>
+          <span class="item">Shot on location</span><span class="dot"></span>
+          <span class="item">Cut with intent</span><span class="dot"></span>
+          <span class="item">Graded to taste</span><span class="dot"></span>
+          <span class="item">Delivered on time</span><span class="dot"></span>
+          <span class="item">Est. 2019</span><span class="dot"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="about wrap" id="about" data-screen-label="About">
+    <div class="about-grid">
+      <div>
+        <h2 class="display rv" style="margin-top: 0;">Film is a craft.<br>We treat it like one.</h2>
+      </div>
+      <div class="about-copy">
+        <p class="rv read-reveal">Filumed Productions is a creative video production company specializing in
+          commercials, branded content, podcasts, and cinematic storytelling. We help brands, businesses, and creators
+          bring their ideas to life from concept to final delivery, creating content that captures attention and leaves
+          a lasting impact.</p>
+        <p class="rv read-reveal">We believe attention is earned frame by frame &mdash; so every project starts with a
+          story worth telling, not a shot list. We plan, shoot, and cut high-quality visual work designed to stop thumbs
+          and hold rooms.</p>
+        <div class="stats" data-stagger="">
+          <div class="stat rv">
+            <div class="num display">120<sup>+</sup></div>
+            <div class="lbl mono">Projects completed</div>
+          </div>
+          <div class="stat rv">
+            <div class="num display">40<sup>+</sup></div>
+            <div class="lbl mono">Happy clients</div>
+          </div>
+          <div class="stat rv">
+            <div class="num display">5<sup>+</sup></div>
+            <div class="lbl mono">Years active</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SERVICES =================
+  <section class="services wrap" id="services" data-screen-label="Services">
+    <h2 class="display rv" style="margin-top: 0;">What we <span class="accent">do</span></h2>
+    <div class="svc-list" data-stagger="">
+      <a class="svc rv" href="#contact" data-preview="Brand Films"><span class="name">Brand Films</span><span
+          class="go">&rarr;</span></a>
+      <a class="svc rv" href="#contact" data-preview="TV Commercials"><span class="name">TV Commercials</span><span
+          class="go">&rarr;</span></a>
+      <a class="svc rv" href="#contact" data-preview="Social Media Reels"><span class="name">Social Media
+          Reels</span><span class="go">&rarr;</span></a>
+      <a class="svc rv" href="#contact" data-preview="Music Videos"><span class="name">Music Videos</span><span
+          class="go">&rarr;</span></a>
+      <a class="svc rv" href="#contact" data-preview="Documentary &amp; Film"><span class="name">Documentary &amp;
+          Film</span><span class="go">&rarr;</span></a>
+      <a class="svc rv" href="#contact" data-preview="Motion Graphics &amp; VFX"><span class="name">Motion Graphics
+          &amp; VFX</span><span class="go">&rarr;</span></a>
+      <a class="svc rv" href="#contact" data-preview="Events &amp; Interviews"><span class="name">Events &amp;
+          Interviews</span><span class="go">&rarr;</span></a>
+    </div>
+  </section> -->
+
+  <section class="work wrap" id="work" data-screen-label="Work">
+    <h2 class="display rv" style="margin-top: 0;">The work <span class="accent">speaks.</span></h2>
+
+    <!-- featured showreel container (rendered dynamically) -->
+    <div id="featured-showreel-container"></div>
+
+    <!-- filters container (rendered dynamically) -->
+    <div id="filters-container" class="filters rv"></div>
+
+    <!-- grid container (rendered dynamically) -->
+    <div id="work-grid-container" class="work-grid" data-stagger=""></div>
+  </section>
+
+
+
+  <!-- ================= SCENE FOOTER ================= -->
+  <div class="scene-footer" id="contact" data-screen-label="Contact CTA">
+    <section class="cta">
+      <div class="ghost">Film</div>
+      <div class="wrap" data-stagger>
+        <div class="mono kicker rv">Ready to roll?</div>
+        <h2 class="display rv">Let's make a <span class="accent-w">scene.</span></h2>
+        <div class="rv"><a class="btn btn-solid" href="mailto:hello@filumed.com"
+            style="font-size:14px;padding:22px 44px">Start a project <span class="arr">&rarr;</span></a></div>
+      </div>
+    </section>
+  </div>
+
+  <footer data-screen-label="Footer">
+    <a class="logo footer-logo" href="#home" aria-label="FILUMED home">
+      <img class="logo-img" src="/filumed-logo.svg" alt="Filumed Productions logo" />
+    </a>
+    <div class="f-links">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#work">Work</a>
+    </div>
+    <div class="copy">&copy; 2026 Filumed Productions. All rights reserved.</div>
+  </footer>
+
+  <!-- ================= VIDEO LIGHTBOX MODAL ================= -->
+  <div id="video-modal" class="video-modal" aria-hidden="true" role="dialog">
+    <div class="video-modal-overlay"></div>
+    <div class="video-modal-container">
+      <button class="video-modal-close" aria-label="Close video">
+        <span class="close-icon">&times;</span>
+      </button>
+      <div class="video-modal-body">
+        <div class="video-ratio-box">
+          <!-- YouTube iframe dynamically injected here via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
