@@ -14,7 +14,7 @@
   vantaBg.className = "bg-canvas";
   vantaBg.style.display = "none";
   vantaBg.style.pointerEvents = "none";
-  
+
   // Prepend vanta-bg inside the .hero element if present to confine it to the hero page
   var hero = document.querySelector(".hero");
   if (hero) {
@@ -195,8 +195,13 @@
 
   function initStars() {
     grainParticles = [];
-    var count = Math.round((W * H) / 110);
-    count = Math.max(4000, Math.min(count, 18000));
+    var isMobile = W < 768;
+    var divisor = isMobile ? 350 : 110;
+    var minCount = isMobile ? 1200 : 4000;
+    var maxCount = isMobile ? 2500 : 18000;
+
+    var count = Math.round((W * H) / divisor);
+    count = Math.max(minCount, Math.min(count, maxCount));
 
     var warmTones = [
       "225,208,185",
