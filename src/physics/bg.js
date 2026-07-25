@@ -195,40 +195,40 @@
 
   function initStars() {
     stars = [];
-    var count = Math.round((W * H) / 2600);
-    count = Math.max(220, Math.min(count, 750));
+    var count = Math.round((W * H) / 1400);
+    count = Math.max(500, Math.min(count, 1350));
 
     var starColors = [
       "255,255,255",
       "255,255,255",
       "255,255,255",
-      "215,235,255",
-      "255,245,230",
-      "235,240,255"
+      "220,240,255",
+      "255,248,235",
+      "240,245,255"
     ];
 
     for (var i = 0; i < count; i++) {
       var depth = Math.random();
       var r, vx, vy, baseAlpha, zLayer;
 
-      if (depth < 0.6) {
+      if (depth < 0.55) {
         zLayer = 1;
-        r = 0.4 + Math.random() * 0.7;
-        vy = -0.04 - Math.random() * 0.08;
-        vx = (Math.random() - 0.5) * 0.04;
-        baseAlpha = 0.2 + Math.random() * 0.4;
-      } else if (depth < 0.9) {
+        r = 0.4 + Math.random() * 0.8;
+        vy = -0.04 - Math.random() * 0.09;
+        vx = (Math.random() - 0.5) * 0.05;
+        baseAlpha = 0.3 + Math.random() * 0.5;
+      } else if (depth < 0.88) {
         zLayer = 2;
-        r = 0.9 + Math.random() * 1.0;
-        vy = -0.09 - Math.random() * 0.15;
-        vx = (Math.random() - 0.5) * 0.08;
-        baseAlpha = 0.4 + Math.random() * 0.45;
+        r = 1.0 + Math.random() * 1.2;
+        vy = -0.09 - Math.random() * 0.16;
+        vx = (Math.random() - 0.5) * 0.09;
+        baseAlpha = 0.5 + Math.random() * 0.45;
       } else {
         zLayer = 3;
-        r = 1.8 + Math.random() * 1.6;
-        vy = -0.16 - Math.random() * 0.25;
-        vx = (Math.random() - 0.5) * 0.12;
-        baseAlpha = 0.6 + Math.random() * 0.4;
+        r = 1.9 + Math.random() * 1.8;
+        vy = -0.16 - Math.random() * 0.28;
+        vx = (Math.random() - 0.5) * 0.14;
+        baseAlpha = 0.7 + Math.random() * 0.3;
       }
 
       stars.push({
@@ -239,10 +239,10 @@
         vx: vx,
         vy: vy,
         baseAlpha: baseAlpha,
-        twinkleSpeed: 0.008 + Math.random() * 0.03,
+        twinkleSpeed: 0.009 + Math.random() * 0.035,
         twinklePhase: Math.random() * Math.PI * 2,
         color: starColors[Math.floor(Math.random() * starColors.length)],
-        hasGlow: zLayer === 3 || (zLayer === 2 && Math.random() < 0.35)
+        hasGlow: zLayer === 3 || (zLayer === 2 && Math.random() < 0.45)
       });
     }
   }
@@ -290,7 +290,7 @@
 
       p.twinklePhase += p.twinkleSpeed;
       var twinkle = 0.55 + 0.45 * Math.sin(p.twinklePhase);
-      var alpha = Math.min(1, Math.max(0.05, p.baseAlpha * twinkle));
+      var alpha = Math.min(1, Math.max(0.08, p.baseAlpha * twinkle));
 
       var renderX = p.x + mouseOffsetX * p.z;
       var renderY = p.y + mouseOffsetY * p.z;
@@ -303,11 +303,11 @@
         alpha = Math.min(1, alpha + near * 0.4);
       }
 
-      if (p.hasGlow && alpha > 0.25) {
-        var glowRad = p.r * 3.8;
-        var starGlow = ctx.createRadialGradient(renderX, renderY, p.r * 0.5, renderX, renderY, glowRad);
-        starGlow.addColorStop(0, "rgba(" + p.color + "," + (alpha * 0.6).toFixed(3) + ")");
-        starGlow.addColorStop(0.5, "rgba(" + p.color + "," + (alpha * 0.15).toFixed(3) + ")");
+      if (p.hasGlow && alpha > 0.22) {
+        var glowRad = p.r * 4.0;
+        var starGlow = ctx.createRadialGradient(renderX, renderY, p.r * 0.4, renderX, renderY, glowRad);
+        starGlow.addColorStop(0, "rgba(" + p.color + "," + (alpha * 0.65).toFixed(3) + ")");
+        starGlow.addColorStop(0.5, "rgba(" + p.color + "," + (alpha * 0.18).toFixed(3) + ")");
         starGlow.addColorStop(1, "rgba(" + p.color + ",0)");
         ctx.fillStyle = starGlow;
         ctx.beginPath();
@@ -322,16 +322,16 @@
     }
 
     // 3. Occasional Shooting Star (Meteor)
-    if (Math.random() < 0.012 && shootingStars.length < 2) {
+    if (Math.random() < 0.038 && shootingStars.length < 4) {
       shootingStars.push({
-        x: Math.random() * W * 0.8 + W * 0.1,
-        y: Math.random() * H * 0.4,
-        length: 90 + Math.random() * 90,
-        speed: 12 + Math.random() * 12,
-        angle: (Math.PI / 4) + (Math.random() - 0.5) * 0.2,
+        x: Math.random() * W * 0.9,
+        y: Math.random() * H * 0.5,
+        length: 100 + Math.random() * 110,
+        speed: 14 + Math.random() * 14,
+        angle: (Math.PI / 4) + (Math.random() - 0.5) * 0.35,
         life: 0,
-        maxLife: 25 + Math.floor(Math.random() * 20),
-        size: 1.2 + Math.random() * 1.2
+        maxLife: 28 + Math.floor(Math.random() * 22),
+        size: 1.3 + Math.random() * 1.4
       });
     }
 
