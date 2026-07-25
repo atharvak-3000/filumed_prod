@@ -189,18 +189,13 @@
     ctx.fillRect(0, 0, W, H);
   }
 
-  /* ---------- reference texture & warm ambient grain engine ---------- */
-  var warmGrainImg = new Image();
-  warmGrainImg.src = "/bg-warm-grain.png";
-  var warmGrainLoaded = false;
-  warmGrainImg.onload = function () { warmGrainLoaded = true; };
-
+  /* ---------- ultra-fine warm film grain & amber diagonal light ---------- */
   var grainParticles = [];
 
   function initStars() {
     grainParticles = [];
-    var count = Math.round((W * H) / 320);
-    count = Math.max(2500, Math.min(count, 8000));
+    var count = Math.round((W * H) / 110);
+    count = Math.max(4000, Math.min(count, 18000));
 
     var warmTones = [
       "225,208,185",
@@ -211,71 +206,59 @@
     ];
 
     for (var i = 0; i < count; i++) {
+      var x = Math.random() * W;
+      var y = Math.random() * H;
+      var r = 0.35 + Math.random() * 0.65;
+      var alpha = 0.04 + Math.random() * 0.38;
+
       grainParticles.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: 0.35 + Math.random() * 0.55,
-        baseAlpha: 0.03 + Math.random() * 0.25,
+        x: x,
+        y: y,
+        r: r,
+        baseAlpha: alpha,
         color: warmTones[Math.floor(Math.random() * warmTones.length)],
-        vx: (Math.random() - 0.5) * 0.04,
-        vy: -0.03 - Math.random() * 0.09
+        vx: (Math.random() - 0.5) * 0.05,
+        vy: -0.04 - Math.random() * 0.12
       });
     }
   }
 
   function drawStars(now) {
-    var mouseShiftX = (smx - W / 2) * 0.06;
-    var mouseShiftY = (smy - H / 2) * 0.06;
+    // 1. Deep warm brown-black base color
+    ctx.fillStyle = "#090807";
+    ctx.fillRect(0, 0, W, H);
 
-    if (warmGrainLoaded && warmGrainImg.width && warmGrainImg.height) {
-      // 1. Draw Reference Grain Image (cropping top & bottom UI overlay elements)
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
+    var mouseShiftX = (smx - W / 2) * 0.08;
+    var mouseShiftY = (smy - H / 2) * 0.08;
 
-      // Crop inner 78% height of the image to remove UI arrows/buttons
-      var sx = warmGrainImg.width * 0.02;
-      var sy = warmGrainImg.height * 0.11;
-      var sw = warmGrainImg.width * 0.96;
-      var sh = warmGrainImg.height * 0.77;
-
-      var imgRatio = sw / sh;
-      var canvasRatio = W / H;
-      var dw, dh, dx, dy;
-
-      if (canvasRatio > imgRatio) {
-        dw = W;
-        dh = W / imgRatio;
-        dx = 0;
-        dy = (H - dh) / 2;
-      } else {
-        dh = H;
-        dw = H * imgRatio;
-        dx = (W - dw) / 2;
-        dy = 0;
-      }
-
-      ctx.drawImage(warmGrainImg, sx, sy, sw, sh, dx + mouseShiftX * 0.2, dy + mouseShiftY * 0.2, dw, dh);
-    } else {
-      // Fallback base
-      ctx.fillStyle = "#090807";
-      ctx.fillRect(0, 0, W, H);
-    }
-
-    // 2. Soft Upper-Right Warm Amber Light Beam Overlay (matches reference composition)
-    var beam1X = W * 0.75 + Math.sin(now * 0.00015) * W * 0.05 + mouseShiftX;
-    var beam1Y = H * 0.25 + Math.cos(now * 0.0002) * H * 0.05 + mouseShiftY;
+    // 2. Soft diagonal light gradient from Upper-Right toward Lower-Left (Warm Amber / Brown)
+    var beam1X = W * 0.75 + Math.sin(now * 0.00015) * W * 0.06 + mouseShiftX;
+    var beam1Y = H * 0.25 + Math.cos(now * 0.0002) * H * 0.06 + mouseShiftY;
     var rad1 = Math.max(W, H) * 0.7;
 
     var g1 = ctx.createRadialGradient(beam1X, beam1Y, 0, beam1X, beam1Y, rad1);
-    g1.addColorStop(0, "rgba(95, 68, 48, 0.28)");
-    g1.addColorStop(0.4, "rgba(55, 40, 28, 0.16)");
-    g1.addColorStop(0.8, "rgba(20, 16, 12, 0.06)");
-    g1.addColorStop(1, "rgba(0, 0, 0, 0)");
+    g1.addColorStop(0, "rgba(82, 60, 42, 0.44)");
+    g1.addColorStop(0.35, "rgba(52, 38, 26, 0.28)");
+    g1.addColorStop(0.7, "rgba(24, 18, 13, 0.14)");
+    g1.addColorStop(1, "rgba(9, 8, 7, 0)");
 
     ctx.fillStyle = g1;
     ctx.fillRect(0, 0, W, H);
 
-    // 3. Dynamic Micro-Grain Overlay (gives organic motion to the texture)
+    // Secondary subtle warm glow
+    var beam2X = W * 0.5 + Math.cos(now * 0.00018) * W * 0.05 - mouseShiftX * 0.4;
+    var beam2Y = H * 0.6 + Math.sin(now * 0.00022) * H * 0.05 - mouseShiftY * 0.4;
+    var rad2 = Math.max(W, H) * 0.55;
+
+    var g2 = ctx.createRadialGradient(beam2X, beam2Y, 0, beam2X, beam2Y, rad2);
+    g2.addColorStop(0, "rgba(62, 46, 32, 0.28)");
+    g2.addColorStop(0.5, "rgba(32, 24, 17, 0.12)");
+    g2.addColorStop(1, "rgba(9, 8, 7, 0)");
+
+    ctx.fillStyle = g2;
+    ctx.fillRect(0, 0, W, H);
+
+    // 3. Render ultra-dense 1px film grain noise field
     for (var i = 0; i < grainParticles.length; i++) {
       var p = grainParticles[i];
 
@@ -286,10 +269,15 @@
       if (p.x < -2) p.x = W + 2;
       if (p.x > W + 2) p.x = -2;
 
-      var renderX = p.x + (Math.random() - 0.5) * 1.0 + mouseShiftX * 0.02;
-      var renderY = p.y + (Math.random() - 0.5) * 1.0 + mouseShiftY * 0.02;
+      var renderX = p.x + (Math.random() - 0.5) * 1.1 + mouseShiftX * 0.02;
+      var renderY = p.y + (Math.random() - 0.5) * 1.1 + mouseShiftY * 0.02;
 
-      var currentAlpha = p.baseAlpha * (0.7 + 0.3 * Math.random());
+      var dx = renderX - beam1X;
+      var dy = renderY - beam1Y;
+      var distSq = dx * dx + dy * dy;
+      var beamIntensity = Math.max(0, 1 - Math.sqrt(distSq) / (rad1 * 0.8));
+
+      var currentAlpha = p.baseAlpha * (0.6 + 0.4 * Math.random() + beamIntensity * 0.5);
 
       ctx.fillStyle = "rgba(" + p.color + "," + currentAlpha.toFixed(3) + ")";
       ctx.fillRect(renderX, renderY, p.r, p.r);
