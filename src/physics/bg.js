@@ -189,179 +189,137 @@
     ctx.fillRect(0, 0, W, H);
   }
 
-  /* ---------- starfield / starry night ---------- */
-  var stars = [];
-  var shootingStars = [];
+  /* ---------- analog film grain & diagonal light wave ---------- */
+  var grainParticles = [];
+  var dustMotes = [];
 
   function initStars() {
-    stars = [];
-    var count = Math.round((W * H) / 1400);
-    count = Math.max(500, Math.min(count, 1350));
+    grainParticles = [];
+    var count = Math.round((W * H) / 450);
+    count = Math.max(1500, Math.min(count, 6000));
 
-    var starColors = [
-      "255,255,255",
-      "255,255,255",
-      "255,255,255",
-      "220,240,255",
-      "255,248,235",
-      "240,245,255"
+    var colorTones = [
+      "225,220,210",
+      "255,252,242",
+      "200,195,185",
+      "170,165,155",
+      "240,235,225"
     ];
 
     for (var i = 0; i < count; i++) {
-      var depth = Math.random();
-      var r, vx, vy, baseAlpha, zLayer;
+      var x = Math.random() * W;
+      var y = Math.random() * H;
+      var r = 0.4 + Math.random() * 0.95;
+      var alpha = 0.05 + Math.random() * 0.45;
 
-      if (depth < 0.55) {
-        zLayer = 1;
-        r = 0.4 + Math.random() * 0.8;
-        vy = -0.04 - Math.random() * 0.09;
-        vx = (Math.random() - 0.5) * 0.05;
-        baseAlpha = 0.3 + Math.random() * 0.5;
-      } else if (depth < 0.88) {
-        zLayer = 2;
-        r = 1.0 + Math.random() * 1.2;
-        vy = -0.09 - Math.random() * 0.16;
-        vx = (Math.random() - 0.5) * 0.09;
-        baseAlpha = 0.5 + Math.random() * 0.45;
-      } else {
-        zLayer = 3;
-        r = 1.9 + Math.random() * 1.8;
-        vy = -0.16 - Math.random() * 0.28;
-        vx = (Math.random() - 0.5) * 0.14;
-        baseAlpha = 0.7 + Math.random() * 0.3;
-      }
+      grainParticles.push({
+        x: x,
+        y: y,
+        r: r,
+        baseAlpha: alpha,
+        color: colorTones[Math.floor(Math.random() * colorTones.length)],
+        vx: (Math.random() - 0.5) * 0.08,
+        vy: -0.05 - Math.random() * 0.15
+      });
+    }
 
-      stars.push({
+    dustMotes = [];
+    for (var j = 0; j < 45; j++) {
+      dustMotes.push({
         x: Math.random() * W,
         y: Math.random() * H,
-        r: r,
-        z: zLayer,
-        vx: vx,
-        vy: vy,
-        baseAlpha: baseAlpha,
-        twinkleSpeed: 0.009 + Math.random() * 0.035,
-        twinklePhase: Math.random() * Math.PI * 2,
-        color: starColors[Math.floor(Math.random() * starColors.length)],
-        hasGlow: zLayer === 3 || (zLayer === 2 && Math.random() < 0.45)
+        r: 1.2 + Math.random() * 2.0,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: -0.1 - Math.random() * 0.25,
+        alpha: 0.15 + Math.random() * 0.35,
+        twinkle: Math.random() * Math.PI * 2
       });
     }
   }
 
   function drawStars(now) {
-    // 1. Deep Space Cosmic Background
-    ctx.fillStyle = "#030306";
+    // 1. Dark warm charcoal canvas base
+    ctx.fillStyle = "#090908";
     ctx.fillRect(0, 0, W, H);
 
-    // Subtle atmospheric nebula shifts
-    var nebX1 = (0.3 + Math.sin(now * 0.00015) * 0.1) * W;
-    var nebY1 = (0.4 + Math.cos(now * 0.00012) * 0.1) * H;
-    var rad1 = Math.max(W, H) * 0.5;
-    var g1 = ctx.createRadialGradient(nebX1, nebY1, 0, nebX1, nebY1, rad1);
-    g1.addColorStop(0, "rgba(25, 20, 50, 0.28)");
-    g1.addColorStop(0.6, "rgba(10, 8, 25, 0.1)");
-    g1.addColorStop(1, "rgba(3, 3, 6, 0)");
+    // 2. Sweeping diagonal light stream / projector beam
+    var mouseShiftX = (smx - W / 2) * 0.08;
+    var mouseShiftY = (smy - H / 2) * 0.08;
+
+    var beam1X = W * 0.65 + Math.sin(now * 0.0002) * W * 0.08 + mouseShiftX;
+    var beam1Y = H * 0.35 + Math.cos(now * 0.00025) * H * 0.08 + mouseShiftY;
+    var rad1 = Math.max(W, H) * 0.65;
+
+    var g1 = ctx.createRadialGradient(beam1X, beam1Y, 0, beam1X, beam1Y, rad1);
+    g1.addColorStop(0, "rgba(80, 75, 66, 0.45)");
+    g1.addColorStop(0.35, "rgba(48, 44, 38, 0.26)");
+    g1.addColorStop(0.7, "rgba(22, 20, 18, 0.12)");
+    g1.addColorStop(1, "rgba(9, 9, 8, 0)");
+
     ctx.fillStyle = g1;
     ctx.fillRect(0, 0, W, H);
 
-    var nebX2 = (0.7 + Math.cos(now * 0.00018) * 0.12) * W;
-    var nebY2 = (0.6 + Math.sin(now * 0.00014) * 0.12) * H;
-    var rad2 = Math.max(W, H) * 0.45;
-    var g2 = ctx.createRadialGradient(nebX2, nebY2, 0, nebX2, nebY2, rad2);
-    g2.addColorStop(0, "rgba(45, 15, 35, 0.18)");
-    g2.addColorStop(0.7, "rgba(15, 5, 20, 0.05)");
-    g2.addColorStop(1, "rgba(3, 3, 6, 0)");
+    var beam2X = W * 0.3 + Math.cos(now * 0.00018) * W * 0.06 - mouseShiftX * 0.5;
+    var beam2Y = H * 0.8 + Math.sin(now * 0.00022) * H * 0.06 - mouseShiftY * 0.5;
+    var rad2 = Math.max(W, H) * 0.55;
+
+    var g2 = ctx.createRadialGradient(beam2X, beam2Y, 0, beam2X, beam2Y, rad2);
+    g2.addColorStop(0, "rgba(60, 56, 48, 0.3)");
+    g2.addColorStop(0.5, "rgba(30, 28, 24, 0.14)");
+    g2.addColorStop(1, "rgba(9, 9, 8, 0)");
+
     ctx.fillStyle = g2;
     ctx.fillRect(0, 0, W, H);
 
-    // Mouse offset for 3D depth parallax
-    var mouseOffsetX = (smx - W / 2) * 0.02;
-    var mouseOffsetY = (smy - H / 2) * 0.02;
-
-    // 2. Render & Update Stars
-    for (var i = 0; i < stars.length; i++) {
-      var p = stars[i];
+    // 3. Render dense analog film grain field
+    for (var i = 0; i < grainParticles.length; i++) {
+      var p = grainParticles[i];
 
       p.x += p.vx;
       p.y += p.vy;
 
-      if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
-      if (p.x < -10) p.x = W + 10;
-      if (p.x > W + 10) p.x = -10;
+      if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W; }
+      if (p.x < -4) p.x = W + 4;
+      if (p.x > W + 4) p.x = -4;
 
-      p.twinklePhase += p.twinkleSpeed;
-      var twinkle = 0.55 + 0.45 * Math.sin(p.twinklePhase);
-      var alpha = Math.min(1, Math.max(0.08, p.baseAlpha * twinkle));
+      var renderX = p.x + (Math.random() - 0.5) * 1.2 + mouseShiftX * 0.03;
+      var renderY = p.y + (Math.random() - 0.5) * 1.2 + mouseShiftY * 0.03;
 
-      var renderX = p.x + mouseOffsetX * p.z;
-      var renderY = p.y + mouseOffsetY * p.z;
-
-      var dx = renderX - smx;
-      var dy = renderY - smy;
+      var dx = renderX - beam1X;
+      var dy = renderY - beam1Y;
       var distSq = dx * dx + dy * dy;
-      if (distSq < 22500) {
-        var near = 1 - Math.sqrt(distSq) / 150;
-        alpha = Math.min(1, alpha + near * 0.4);
-      }
+      var beamIntensity = Math.max(0, 1 - Math.sqrt(distSq) / (rad1 * 0.75));
 
-      if (p.hasGlow && alpha > 0.22) {
-        var glowRad = p.r * 4.0;
-        var starGlow = ctx.createRadialGradient(renderX, renderY, p.r * 0.4, renderX, renderY, glowRad);
-        starGlow.addColorStop(0, "rgba(" + p.color + "," + (alpha * 0.65).toFixed(3) + ")");
-        starGlow.addColorStop(0.5, "rgba(" + p.color + "," + (alpha * 0.18).toFixed(3) + ")");
-        starGlow.addColorStop(1, "rgba(" + p.color + ",0)");
-        ctx.fillStyle = starGlow;
-        ctx.beginPath();
-        ctx.arc(renderX, renderY, glowRad, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      var currentAlpha = p.baseAlpha * (0.6 + 0.4 * Math.random() + beamIntensity * 0.55);
 
+      ctx.fillStyle = "rgba(" + p.color + "," + currentAlpha.toFixed(3) + ")";
+      ctx.fillRect(renderX, renderY, p.r, p.r);
+    }
+
+    // 4. Render organic floating dust motes
+    for (var m = 0; m < dustMotes.length; m++) {
+      var d = dustMotes[m];
+      d.x += d.vx;
+      d.y += d.vy;
+      d.twinkle += 0.03;
+
+      if (d.y < -6) { d.y = H + 6; d.x = Math.random() * W; }
+      if (d.x < -6) d.x = W + 6;
+      if (d.x > W + 6) d.x = -6;
+
+      var alpha = d.alpha * (0.7 + 0.3 * Math.sin(d.twinkle));
+      var renderX = d.x + mouseShiftX * 0.06;
+      var renderY = d.y + mouseShiftY * 0.06;
+
+      var glowGrad = ctx.createRadialGradient(renderX, renderY, 0, renderX, renderY, d.r * 2.5);
+      glowGrad.addColorStop(0, "rgba(240, 235, 220, " + alpha.toFixed(3) + ")");
+      glowGrad.addColorStop(0.4, "rgba(200, 195, 180, " + (alpha * 0.35).toFixed(3) + ")");
+      glowGrad.addColorStop(1, "rgba(200, 195, 180, 0)");
+
+      ctx.fillStyle = glowGrad;
       ctx.beginPath();
-      ctx.arc(renderX, renderY, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(" + p.color + "," + alpha.toFixed(3) + ")";
+      ctx.arc(renderX, renderY, d.r * 2.5, 0, Math.PI * 2);
       ctx.fill();
-    }
-
-    // 3. Occasional Shooting Star (Meteor)
-    if (Math.random() < 0.038 && shootingStars.length < 4) {
-      shootingStars.push({
-        x: Math.random() * W * 0.9,
-        y: Math.random() * H * 0.5,
-        length: 100 + Math.random() * 110,
-        speed: 14 + Math.random() * 14,
-        angle: (Math.PI / 4) + (Math.random() - 0.5) * 0.35,
-        life: 0,
-        maxLife: 28 + Math.floor(Math.random() * 22),
-        size: 1.3 + Math.random() * 1.4
-      });
-    }
-
-    for (var j = shootingStars.length - 1; j >= 0; j--) {
-      var s = shootingStars[j];
-      s.life++;
-      s.x += Math.cos(s.angle) * s.speed;
-      s.y += Math.sin(s.angle) * s.speed;
-
-      var tailX = s.x - Math.cos(s.angle) * s.length;
-      var tailY = s.y - Math.sin(s.angle) * s.length;
-
-      var meteorAlpha = 1 - (s.life / s.maxLife);
-      if (meteorAlpha <= 0) {
-        shootingStars.splice(j, 1);
-        continue;
-      }
-
-      var grad = ctx.createLinearGradient(s.x, s.y, tailX, tailY);
-      grad.addColorStop(0, "rgba(255, 255, 255, " + meteorAlpha.toFixed(3) + ")");
-      grad.addColorStop(0.2, "rgba(200, 225, 255, " + (meteorAlpha * 0.7).toFixed(3) + ")");
-      grad.addColorStop(1, "rgba(255, 255, 255, 0)");
-
-      ctx.lineWidth = s.size;
-      ctx.strokeStyle = grad;
-      ctx.lineCap = "round";
-      ctx.beginPath();
-      ctx.moveTo(s.x, s.y);
-      ctx.lineTo(tailX, tailY);
-      ctx.stroke();
     }
   }
 
