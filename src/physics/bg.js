@@ -191,6 +191,7 @@
 
   /* ---------- ultra-fine warm film grain & amber diagonal light ---------- */
   var grainParticles = [];
+  var shootingStars = [];
 
   function initStars() {
     grainParticles = [];
@@ -281,6 +282,49 @@
 
       ctx.fillStyle = "rgba(" + p.color + "," + currentAlpha.toFixed(3) + ")";
       ctx.fillRect(renderX, renderY, p.r, p.r);
+    }
+
+    // 4. Subtle Shooting Star (Meteor)
+    if (Math.random() < 0.015 && shootingStars.length < 2) {
+      shootingStars.push({
+        x: Math.random() * W * 0.85 + W * 0.05,
+        y: Math.random() * H * 0.45,
+        length: 70 + Math.random() * 50,
+        speed: 10 + Math.random() * 8,
+        angle: (Math.PI / 4) + (Math.random() - 0.5) * 0.25,
+        life: 0,
+        maxLife: 24 + Math.floor(Math.random() * 16),
+        size: 0.9 + Math.random() * 0.5
+      });
+    }
+
+    for (var j = shootingStars.length - 1; j >= 0; j--) {
+      var s = shootingStars[j];
+      s.life++;
+      s.x += Math.cos(s.angle) * s.speed;
+      s.y += Math.sin(s.angle) * s.speed;
+
+      var tailX = s.x - Math.cos(s.angle) * s.length;
+      var tailY = s.y - Math.sin(s.angle) * s.length;
+
+      var meteorAlpha = (1 - (s.life / s.maxLife)) * 0.6;
+      if (meteorAlpha <= 0) {
+        shootingStars.splice(j, 1);
+        continue;
+      }
+
+      var grad = ctx.createLinearGradient(s.x, s.y, tailX, tailY);
+      grad.addColorStop(0, "rgba(255, 248, 235, " + meteorAlpha.toFixed(3) + ")");
+      grad.addColorStop(0.3, "rgba(225, 210, 185, " + (meteorAlpha * 0.6).toFixed(3) + ")");
+      grad.addColorStop(1, "rgba(225, 210, 185, 0)");
+
+      ctx.lineWidth = s.size;
+      ctx.strokeStyle = grad;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(tailX, tailY);
+      ctx.stroke();
     }
   }
 
