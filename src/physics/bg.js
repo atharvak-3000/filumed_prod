@@ -189,182 +189,98 @@
     ctx.fillRect(0, 0, W, H);
   }
 
-  /* ---------- analog film grain & diagonal light wave ---------- */
+  /* ---------- ultra-fine warm film grain & amber diagonal light ---------- */
   var grainParticles = [];
-  var dustMotes = [];
-  var shootingStars = [];
 
   function initStars() {
     grainParticles = [];
-    shootingStars = [];
-    var count = Math.round((W * H) / 450);
-    count = Math.max(1500, Math.min(count, 6000));
+    var count = Math.round((W * H) / 110);
+    count = Math.max(4000, Math.min(count, 18000));
 
-    var colorTones = [
-      "225,220,210",
-      "255,252,242",
-      "200,195,185",
-      "170,165,155",
-      "240,235,225"
+    var warmTones = [
+      "225,208,185",
+      "245,230,205",
+      "185,165,140",
+      "145,125,102",
+      "210,190,165"
     ];
 
     for (var i = 0; i < count; i++) {
       var x = Math.random() * W;
       var y = Math.random() * H;
-      var r = 0.4 + Math.random() * 0.95;
-      var alpha = 0.05 + Math.random() * 0.45;
+      var r = 0.35 + Math.random() * 0.65;
+      var alpha = 0.04 + Math.random() * 0.38;
 
       grainParticles.push({
         x: x,
         y: y,
         r: r,
         baseAlpha: alpha,
-        color: colorTones[Math.floor(Math.random() * colorTones.length)],
-        vx: (Math.random() - 0.5) * 0.08,
-        vy: -0.05 - Math.random() * 0.15
-      });
-    }
-
-    dustMotes = [];
-    for (var j = 0; j < 45; j++) {
-      dustMotes.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: 1.2 + Math.random() * 2.0,
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: -0.1 - Math.random() * 0.25,
-        alpha: 0.15 + Math.random() * 0.35,
-        twinkle: Math.random() * Math.PI * 2
+        color: warmTones[Math.floor(Math.random() * warmTones.length)],
+        vx: (Math.random() - 0.5) * 0.05,
+        vy: -0.04 - Math.random() * 0.12
       });
     }
   }
 
   function drawStars(now) {
-    // 1. Dark warm charcoal canvas base
-    ctx.fillStyle = "#090908";
+    // 1. Deep warm brown-black base color
+    ctx.fillStyle = "#090807";
     ctx.fillRect(0, 0, W, H);
 
-    // 2. Sweeping diagonal light stream / projector beam
     var mouseShiftX = (smx - W / 2) * 0.08;
     var mouseShiftY = (smy - H / 2) * 0.08;
 
-    var beam1X = W * 0.65 + Math.sin(now * 0.0002) * W * 0.08 + mouseShiftX;
-    var beam1Y = H * 0.35 + Math.cos(now * 0.00025) * H * 0.08 + mouseShiftY;
-    var rad1 = Math.max(W, H) * 0.65;
+    // 2. Soft diagonal light gradient from Upper-Right toward Lower-Left (Warm Amber / Brown)
+    var beam1X = W * 0.75 + Math.sin(now * 0.00015) * W * 0.06 + mouseShiftX;
+    var beam1Y = H * 0.25 + Math.cos(now * 0.0002) * H * 0.06 + mouseShiftY;
+    var rad1 = Math.max(W, H) * 0.7;
 
     var g1 = ctx.createRadialGradient(beam1X, beam1Y, 0, beam1X, beam1Y, rad1);
-    g1.addColorStop(0, "rgba(80, 75, 66, 0.45)");
-    g1.addColorStop(0.35, "rgba(48, 44, 38, 0.26)");
-    g1.addColorStop(0.7, "rgba(22, 20, 18, 0.12)");
-    g1.addColorStop(1, "rgba(9, 9, 8, 0)");
+    g1.addColorStop(0, "rgba(82, 60, 42, 0.44)");
+    g1.addColorStop(0.35, "rgba(52, 38, 26, 0.28)");
+    g1.addColorStop(0.7, "rgba(24, 18, 13, 0.14)");
+    g1.addColorStop(1, "rgba(9, 8, 7, 0)");
 
     ctx.fillStyle = g1;
     ctx.fillRect(0, 0, W, H);
 
-    var beam2X = W * 0.3 + Math.cos(now * 0.00018) * W * 0.06 - mouseShiftX * 0.5;
-    var beam2Y = H * 0.8 + Math.sin(now * 0.00022) * H * 0.06 - mouseShiftY * 0.5;
+    // Secondary subtle warm glow
+    var beam2X = W * 0.5 + Math.cos(now * 0.00018) * W * 0.05 - mouseShiftX * 0.4;
+    var beam2Y = H * 0.6 + Math.sin(now * 0.00022) * H * 0.05 - mouseShiftY * 0.4;
     var rad2 = Math.max(W, H) * 0.55;
 
     var g2 = ctx.createRadialGradient(beam2X, beam2Y, 0, beam2X, beam2Y, rad2);
-    g2.addColorStop(0, "rgba(60, 56, 48, 0.3)");
-    g2.addColorStop(0.5, "rgba(30, 28, 24, 0.14)");
-    g2.addColorStop(1, "rgba(9, 9, 8, 0)");
+    g2.addColorStop(0, "rgba(62, 46, 32, 0.28)");
+    g2.addColorStop(0.5, "rgba(32, 24, 17, 0.12)");
+    g2.addColorStop(1, "rgba(9, 8, 7, 0)");
 
     ctx.fillStyle = g2;
     ctx.fillRect(0, 0, W, H);
 
-    // 3. Render dense analog film grain field
+    // 3. Render ultra-dense 1px film grain noise field
     for (var i = 0; i < grainParticles.length; i++) {
       var p = grainParticles[i];
 
       p.x += p.vx;
       p.y += p.vy;
 
-      if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W; }
-      if (p.x < -4) p.x = W + 4;
-      if (p.x > W + 4) p.x = -4;
+      if (p.y < -2) { p.y = H + 2; p.x = Math.random() * W; }
+      if (p.x < -2) p.x = W + 2;
+      if (p.x > W + 2) p.x = -2;
 
-      var renderX = p.x + (Math.random() - 0.5) * 1.2 + mouseShiftX * 0.03;
-      var renderY = p.y + (Math.random() - 0.5) * 1.2 + mouseShiftY * 0.03;
+      var renderX = p.x + (Math.random() - 0.5) * 1.1 + mouseShiftX * 0.02;
+      var renderY = p.y + (Math.random() - 0.5) * 1.1 + mouseShiftY * 0.02;
 
       var dx = renderX - beam1X;
       var dy = renderY - beam1Y;
       var distSq = dx * dx + dy * dy;
-      var beamIntensity = Math.max(0, 1 - Math.sqrt(distSq) / (rad1 * 0.75));
+      var beamIntensity = Math.max(0, 1 - Math.sqrt(distSq) / (rad1 * 0.8));
 
-      var currentAlpha = p.baseAlpha * (0.6 + 0.4 * Math.random() + beamIntensity * 0.55);
+      var currentAlpha = p.baseAlpha * (0.6 + 0.4 * Math.random() + beamIntensity * 0.5);
 
       ctx.fillStyle = "rgba(" + p.color + "," + currentAlpha.toFixed(3) + ")";
       ctx.fillRect(renderX, renderY, p.r, p.r);
-    }
-
-    // 4. Render organic floating dust motes
-    for (var m = 0; m < dustMotes.length; m++) {
-      var d = dustMotes[m];
-      d.x += d.vx;
-      d.y += d.vy;
-      d.twinkle += 0.03;
-
-      if (d.y < -6) { d.y = H + 6; d.x = Math.random() * W; }
-      if (d.x < -6) d.x = W + 6;
-      if (d.x > W + 6) d.x = -6;
-
-      var alpha = d.alpha * (0.7 + 0.3 * Math.sin(d.twinkle));
-      var renderX = d.x + mouseShiftX * 0.06;
-      var renderY = d.y + mouseShiftY * 0.06;
-
-      var glowGrad = ctx.createRadialGradient(renderX, renderY, 0, renderX, renderY, d.r * 2.5);
-      glowGrad.addColorStop(0, "rgba(240, 235, 220, " + alpha.toFixed(3) + ")");
-      glowGrad.addColorStop(0.4, "rgba(200, 195, 180, " + (alpha * 0.35).toFixed(3) + ")");
-      glowGrad.addColorStop(1, "rgba(200, 195, 180, 0)");
-
-      ctx.fillStyle = glowGrad;
-      ctx.beginPath();
-      ctx.arc(renderX, renderY, d.r * 2.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // 5. Shooting Stars (Meteors)
-    if (Math.random() < 0.035 && shootingStars.length < 3) {
-      shootingStars.push({
-        x: Math.random() * W * 0.9,
-        y: Math.random() * H * 0.5,
-        length: 95 + Math.random() * 110,
-        speed: 13 + Math.random() * 13,
-        angle: (Math.PI / 4) + (Math.random() - 0.5) * 0.3,
-        life: 0,
-        maxLife: 26 + Math.floor(Math.random() * 20),
-        size: 1.2 + Math.random() * 1.3
-      });
-    }
-
-    for (var j = shootingStars.length - 1; j >= 0; j--) {
-      var s = shootingStars[j];
-      s.life++;
-      s.x += Math.cos(s.angle) * s.speed;
-      s.y += Math.sin(s.angle) * s.speed;
-
-      var tailX = s.x - Math.cos(s.angle) * s.length;
-      var tailY = s.y - Math.sin(s.angle) * s.length;
-
-      var meteorAlpha = 1 - (s.life / s.maxLife);
-      if (meteorAlpha <= 0) {
-        shootingStars.splice(j, 1);
-        continue;
-      }
-
-      var grad = ctx.createLinearGradient(s.x, s.y, tailX, tailY);
-      grad.addColorStop(0, "rgba(255, 252, 242, " + meteorAlpha.toFixed(3) + ")");
-      grad.addColorStop(0.25, "rgba(220, 215, 200, " + (meteorAlpha * 0.65).toFixed(3) + ")");
-      grad.addColorStop(1, "rgba(220, 215, 200, 0)");
-
-      ctx.lineWidth = s.size;
-      ctx.strokeStyle = grad;
-      ctx.lineCap = "round";
-      ctx.beginPath();
-      ctx.moveTo(s.x, s.y);
-      ctx.lineTo(tailX, tailY);
-      ctx.stroke();
     }
   }
 
