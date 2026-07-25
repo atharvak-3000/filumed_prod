@@ -189,11 +189,14 @@
     ctx.fillRect(0, 0, W, H);
   }
 
-  /* ---------- analog film grain & diagonal light wave ---------- */
+  /* ---------- analog film grain, white stars & shooting stars ---------- */
   var grainParticles = [];
+  var whiteStars = [];
   var dustMotes = [];
+  var shootingStars = [];
 
   function initStars() {
+    // 1. Fine analog film grain
     grainParticles = [];
     var count = Math.round((W * H) / 450);
     count = Math.max(1500, Math.min(count, 6000));
@@ -207,22 +210,51 @@
     ];
 
     for (var i = 0; i < count; i++) {
-      var x = Math.random() * W;
-      var y = Math.random() * H;
-      var r = 0.4 + Math.random() * 0.95;
-      var alpha = 0.05 + Math.random() * 0.45;
-
       grainParticles.push({
-        x: x,
-        y: y,
-        r: r,
-        baseAlpha: alpha,
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: 0.4 + Math.random() * 0.95,
+        baseAlpha: 0.05 + Math.random() * 0.45,
         color: colorTones[Math.floor(Math.random() * colorTones.length)],
         vx: (Math.random() - 0.5) * 0.08,
         vy: -0.05 - Math.random() * 0.15
       });
     }
 
+    // 2. High density bright white spots / stars
+    whiteStars = [];
+    var starCount = Math.round((W * H) / 1600);
+    starCount = Math.max(450, Math.min(starCount, 1200));
+
+    for (var k = 0; k < starCount; k++) {
+      var depth = Math.random();
+      var r, baseAlpha;
+
+      if (depth < 0.6) {
+        r = 0.5 + Math.random() * 0.8;
+        baseAlpha = 0.4 + Math.random() * 0.45;
+      } else if (depth < 0.88) {
+        r = 1.1 + Math.random() * 1.2;
+        baseAlpha = 0.6 + Math.random() * 0.4;
+      } else {
+        r = 2.0 + Math.random() * 1.8;
+        baseAlpha = 0.75 + Math.random() * 0.25;
+      }
+
+      whiteStars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: r,
+        baseAlpha: baseAlpha,
+        vx: (Math.random() - 0.5) * 0.06,
+        vy: -0.06 - Math.random() * 0.18,
+        twinkleSpeed: 0.01 + Math.random() * 0.035,
+        twinklePhase: Math.random() * Math.PI * 2,
+        hasGlow: depth >= 0.7
+      });
+    }
+
+    // 3. Floating organic dust motes
     dustMotes = [];
     for (var j = 0; j < 45; j++) {
       dustMotes.push({
@@ -235,6 +267,8 @@
         twinkle: Math.random() * Math.PI * 2
       });
     }
+
+    shootingStars = [];
   }
 
   function drawStars(now) {
@@ -296,7 +330,42 @@
       ctx.fillRect(renderX, renderY, p.r, p.r);
     }
 
-    // 4. Render organic floating dust motes
+    // 4. Render dense bright white spots / twinkling stars
+    for (var s = 0; s < whiteStars.length; s++) {
+      var ws = whiteStars[s];
+      ws.x += ws.vx;
+      ws.y += ws.vy;
+
+      if (ws.y < -6) { ws.y = H + 6; ws.x = Math.random() * W; }
+      if (ws.x < -6) ws.x = W + 6;
+      if (ws.x > W + 6) ws.x = -6;
+
+      ws.twinklePhase += ws.twinkleSpeed;
+      var tw = 0.55 + 0.45 * Math.sin(ws.twinklePhase);
+      var starAlpha = Math.min(1, Math.max(0.12, ws.baseAlpha * tw));
+
+      var renderX = ws.x + mouseShiftX * 0.05;
+      var renderY = ws.y + mouseShiftY * 0.05;
+
+      if (ws.hasGlow && starAlpha > 0.3) {
+        var glowRad = ws.r * 3.8;
+        var starGlow = ctx.createRadialGradient(renderX, renderY, ws.r * 0.4, renderX, renderY, glowRad);
+        starGlow.addColorStop(0, "rgba(255, 255, 255, " + (starAlpha * 0.7).toFixed(3) + ")");
+        starGlow.addColorStop(0.5, "rgba(240, 245, 255, " + (starAlpha * 0.2).toFixed(3) + ")");
+        starGlow.addColorStop(1, "rgba(255, 255, 255, 0)");
+        ctx.fillStyle = starGlow;
+        ctx.beginPath();
+        ctx.arc(renderX, renderY, glowRad, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.arc(renderX, renderY, ws.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 255, 255, " + starAlpha.toFixed(3) + ")";
+      ctx.fill();
+    }
+
+    // 5. Render organic floating dust motes
     for (var m = 0; m < dustMotes.length; m++) {
       var d = dustMotes[m];
       d.x += d.vx;
@@ -320,6 +389,49 @@
       ctx.beginPath();
       ctx.arc(renderX, renderY, d.r * 2.5, 0, Math.PI * 2);
       ctx.fill();
+    }
+
+    // 6. Occasional Shooting Stars (Meteors)
+    if (Math.random() < 0.035 && shootingStars.length < 4) {
+      shootingStars.push({
+        x: Math.random() * W * 0.95,
+        y: Math.random() * H * 0.5,
+        length: 110 + Math.random() * 120,
+        speed: 14 + Math.random() * 15,
+        angle: (Math.PI / 4) + (Math.random() - 0.5) * 0.35,
+        life: 0,
+        maxLife: 28 + Math.floor(Math.random() * 22),
+        size: 1.4 + Math.random() * 1.5
+      });
+    }
+
+    for (var j = shootingStars.length - 1; j >= 0; j--) {
+      var ms = shootingStars[j];
+      ms.life++;
+      ms.x += Math.cos(ms.angle) * ms.speed;
+      ms.y += Math.sin(ms.angle) * ms.speed;
+
+      var tailX = ms.x - Math.cos(ms.angle) * ms.length;
+      var tailY = ms.y - Math.sin(ms.angle) * ms.length;
+
+      var meteorAlpha = 1 - (ms.life / ms.maxLife);
+      if (meteorAlpha <= 0) {
+        shootingStars.splice(j, 1);
+        continue;
+      }
+
+      var grad = ctx.createLinearGradient(ms.x, ms.y, tailX, tailY);
+      grad.addColorStop(0, "rgba(255, 255, 255, " + meteorAlpha.toFixed(3) + ")");
+      grad.addColorStop(0.25, "rgba(235, 230, 215, " + (meteorAlpha * 0.75).toFixed(3) + ")");
+      grad.addColorStop(1, "rgba(255, 255, 255, 0)");
+
+      ctx.lineWidth = ms.size;
+      ctx.strokeStyle = grad;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(ms.x, ms.y);
+      ctx.lineTo(tailX, tailY);
+      ctx.stroke();
     }
   }
 
