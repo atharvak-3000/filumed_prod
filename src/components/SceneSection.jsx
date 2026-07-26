@@ -142,9 +142,6 @@ export default function SceneSection() {
         <h2 className="cta-title">
           Let&apos;s make a <span className="cta-accent">scene.</span>
         </h2>
-        <p className="cta-sub">
-          Cinematic storytelling, sharper brand visuals, and production that feels as polished as the final frame.
-        </p>
         <div className="cta-actions">
           <a className="cta-btn" href="mailto:hello@filumed.com">
             Start a project <span className="arr">&rarr;</span>
