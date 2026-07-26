@@ -331,6 +331,7 @@ body[data-bg="grain"] .ph .ph-label,
 body[data-bg="grain"] .clients-row .cl,
 body[data-bg="grain"] footer .f-links a,
 body[data-bg="grain"] footer .copy,
+body[data-bg="grain"] .marquee-track .item,
 body[data-bg="stars"] h1,
 body[data-bg="stars"] h2,
 body[data-bg="stars"] h3,
@@ -355,6 +356,7 @@ body[data-bg="stars"] .ph .ph-label,
 body[data-bg="stars"] .clients-row .cl,
 body[data-bg="stars"] footer .f-links a,
 body[data-bg="stars"] footer .copy,
+body[data-bg="stars"] .marquee-track .item,
 body[data-bg="crimson"] h1,
 body[data-bg="crimson"] h2,
 body[data-bg="crimson"] h3,
@@ -378,7 +380,8 @@ body[data-bg="crimson"] .card .meta,
 body[data-bg="crimson"] .ph .ph-label,
 body[data-bg="crimson"] .clients-row .cl,
 body[data-bg="crimson"] footer .f-links a,
-body[data-bg="crimson"] footer .copy {
+body[data-bg="crimson"] footer .copy,
+body[data-bg="crimson"] .marquee-track .item {
   color: #ffffff !important;
 }
 
@@ -469,18 +472,10 @@ body[data-bg="crimson"] .chip:hover {
 body[data-bg="grain"] .marquee,
 body[data-bg="stars"] .marquee,
 body[data-bg="crimson"] .marquee {
-  background: rgba(13, 13, 12, 0.65) !important;
+  background: transparent !important;
   color: #ffffff !important;
-  backdrop-filter: blur(8px) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
-}
-
-body[data-bg="grain"] .marquee.rev,
-body[data-bg="stars"] .marquee.rev,
-body[data-bg="crimson"] .marquee.rev {
-  background: rgba(7, 7, 6, 0.85) !important;
-  border-top: none !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 body[data-bg="grain"] .marquee-track .item,
@@ -492,7 +487,7 @@ body[data-bg="crimson"] .marquee-track .item {
 body[data-bg="grain"] .marquee-track .dot,
 body[data-bg="stars"] .marquee-track .dot,
 body[data-bg="crimson"] .marquee-track .dot {
-  background: var(--accent, #e0181b) !important;
+  background: #ffffff !important;
 }
 
 body[data-bg="stars"] header.nav,
@@ -1028,12 +1023,9 @@ body[data-dir="editorial"] .marquee {
 .marquee-track .item {
   font-family: var(--display);
   font-weight: var(--display-weight);
-  font-size: 24px;
+  font-size: 26px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
 }
 
 body[data-dir="editorial"] .marquee-track .item {
@@ -1047,10 +1039,8 @@ body[data-dir="editorial"] .marquee-track .item {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent, #e0181b);
+  background: var(--accent);
   flex: none;
-  display: inline-block;
-  align-self: center;
 }
 
 body[data-dir="editorial"] .marquee-track .dot {
