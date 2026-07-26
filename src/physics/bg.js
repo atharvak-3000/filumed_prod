@@ -303,6 +303,58 @@
     }
   }
 
+  /* ---------- offscreen static grain texture ---------- */
+  var grainCanvas = document.createElement("canvas");
+  var grainCtx = grainCanvas.getContext("2d");
+
+  function generateGrainTexture() {
+    if (!canvas.width || !canvas.height) return;
+    grainCanvas.width = canvas.width;
+    grainCanvas.height = canvas.height;
+
+    var gCtx = grainCtx;
+    gCtx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+    var w = W;
+    var h = H;
+
+    // Darker warm gradient stops (30-40% reduced brightness on lighter stops)
+    var grad = gCtx.createLinearGradient(w, 0, 0, h);
+    grad.addColorStop(0.0, '#070707');
+    grad.addColorStop(0.28, '#26221c');
+    grad.addColorStop(0.42, '#504639');
+    grad.addColorStop(0.55, '#312a24');
+    grad.addColorStop(0.7, '#0d0b0a');
+    grad.addColorStop(1.0, '#000000');
+    gCtx.fillStyle = grad;
+    gCtx.fillRect(0, 0, w, h);
+
+    // Soft secondary diagonal highlight band
+    var grad2 = gCtx.createLinearGradient(w * 0.9, 0, w * 0.1, h);
+    grad2.addColorStop(0.3, 'rgba(80,70,55,0.22)');
+    grad2.addColorStop(0.5, 'rgba(80,70,55,0.0)');
+    gCtx.fillStyle = grad2;
+    gCtx.fillRect(0, 0, w, h);
+
+    // Film grain noise overlay (generated once and cached)
+    try {
+      var imageData = gCtx.getImageData(0, 0, grainCanvas.width, grainCanvas.height);
+      var data = imageData.data;
+      for (var i = 0; i < data.length; i += 4) {
+        var noise = (Math.random() - 0.5) * 55;
+        var r = data[i] + noise;
+        var g = data[i + 1] + noise;
+        var b = data[i + 2] + noise;
+        data[i] = r < 0 ? 0 : r > 255 ? 255 : r;
+        data[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
+        data[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
+      }
+      gCtx.putImageData(imageData, 0, 0);
+    } catch (e) {
+      // Fallback
+    }
+  }
+
   function resize() {
     DPR = Math.min(2, window.devicePixelRatio || 1);
     W = window.innerWidth; H = window.innerHeight;
@@ -311,6 +363,7 @@
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     initDust();
     initStars();
+    generateGrainTexture();
   }
 
   function readColors() {
@@ -369,46 +422,10 @@
     }
   }
 
-  /* ---------- grainy background engine (from grainy-background.html) ---------- */
+  /* ---------- grainy background engine ---------- */
   function drawGrain() {
-    var w = W;
-    var h = H;
-
-    // Base diagonal gradient: warm brownish-gray band running from
-    // upper-right to lower-left, fading to black at the corners.
-    var grad = ctx.createLinearGradient(w, 0, 0, h);
-    grad.addColorStop(0.0, '#0a0a0a');
-    grad.addColorStop(0.28, '#3a332c');
-    grad.addColorStop(0.42, '#7a6b58');
-    grad.addColorStop(0.55, '#4a4038');
-    grad.addColorStop(0.7, '#141210');
-    grad.addColorStop(1.0, '#000000');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, w, h);
-
-    // A second soft diagonal highlight band for depth
-    var grad2 = ctx.createLinearGradient(w * 0.9, 0, w * 0.1, h);
-    grad2.addColorStop(0.3, 'rgba(120,105,85,0.35)');
-    grad2.addColorStop(0.5, 'rgba(120,105,85,0.0)');
-    ctx.fillStyle = grad2;
-    ctx.fillRect(0, 0, w, h);
-
-    // Film grain noise overlay
-    try {
-      var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      var data = imageData.data;
-      for (var i = 0; i < data.length; i += 4) {
-        var noise = (Math.random() - 0.5) * 60;
-        var r = data[i] + noise;
-        var g = data[i + 1] + noise;
-        var b = data[i + 2] + noise;
-        data[i] = r < 0 ? 0 : r > 255 ? 255 : r;
-        data[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
-        data[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
-      }
-      ctx.putImageData(imageData, 0, 0);
-    } catch (e) {
-      // Fallback in case of context restriction
+    if (grainCanvas.width) {
+      ctx.drawImage(grainCanvas, 0, 0, W, H);
     }
   }
 
