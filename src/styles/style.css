@@ -400,14 +400,15 @@ body[data-bg="grain"] .cta-btn,
 body[data-bg="stars"] .cta-btn,
 body[data-bg="crimson"] .cta-btn {
   background: #ffffff !important;
-  color: #0d0d0c !important;
+  color: #050504 !important;
   border-color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.08);
 }
 
 body[data-bg="grain"] .cta-btn *,
 body[data-bg="stars"] .cta-btn *,
 body[data-bg="crimson"] .cta-btn * {
-  color: #0d0d0c !important;
+  color: #050504 !important;
 }
 
 body[data-bg="grain"] .btn-solid:hover,
@@ -416,22 +417,29 @@ body[data-bg="crimson"] .btn-solid:hover,
 body[data-bg="grain"] .cta-btn:hover,
 body[data-bg="stars"] .cta-btn:hover,
 body[data-bg="crimson"] .cta-btn:hover {
-  background: #ffffff !important;
-  color: #0d0d0c !important;
-  border-color: #ffffff !important;
-  opacity: 0.95;
+  background: #f0ede6 !important;
+  color: #050504 !important;
+  border-color: #f0ede6 !important;
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
 }
 
+body[data-bg="grain"] .btn-ghost,
 body[data-bg="stars"] .btn-ghost,
 body[data-bg="crimson"] .btn-ghost {
-  border-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
   color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.03) !important;
 }
 
+body[data-bg="grain"] .btn-ghost:hover,
 body[data-bg="stars"] .btn-ghost:hover,
 body[data-bg="crimson"] .btn-ghost:hover {
   background: #ffffff !important;
-  color: #0d0d0c !important;
+  color: #050504 !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
 }
 
 body[data-bg="stars"] .chip,
