@@ -31,31 +31,6 @@
   var frame = 0, rafId = null;
   var ink = "13,13,12", accent = "224,24,27";
 
-  function resize() {
-    DPR = Math.min(2, window.devicePixelRatio || 1);
-    W = window.innerWidth; H = window.innerHeight;
-    canvas.width = W * DPR; canvas.height = H * DPR;
-    canvas.style.width = W + "px"; canvas.style.height = H + "px";
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    initDust();
-  }
-
-  function readColors() {
-    var cs = getComputedStyle(document.body);
-    var probe = document.createElement("div");
-    probe.style.color = cs.getPropertyValue("--accent").trim();
-    document.body.appendChild(probe);
-    var rgb = getComputedStyle(probe).color.match(/\d+/g);
-    if (rgb) accent = rgb.slice(0, 3).join(",");
-    probe.style.color = cs.getPropertyValue("--ink").trim();
-    var rgb2 = getComputedStyle(probe).color.match(/\d+/g);
-    if (rgb2) ink = rgb2.slice(0, 3).join(",");
-    document.body.removeChild(probe);
-  }
-
-  window.addEventListener("mousemove", function (e) { mx = e.clientX; my = e.clientY; }, { passive: true });
-  window.addEventListener("resize", resize);
-
   /* ---------- film dust ---------- */
   var dust = [];
   function initDust() {
@@ -420,7 +395,7 @@
 
     // Film grain noise overlay
     try {
-      var imageData = ctx.getImageData(0, 0, w, h);
+      var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       var data = imageData.data;
       for (var i = 0; i < data.length; i += 4) {
         var noise = (Math.random() - 0.5) * 60;
