@@ -22,30 +22,31 @@
     grainCanvas.height = gH;
     var gctx = grainCanvas.getContext("2d");
 
-    // Base near-black fill
-    gctx.fillStyle = "#050403";
+    // Pure near-black base — no warm/red tint
+    gctx.fillStyle = "#050504";
     gctx.fillRect(0, 0, gW, gH);
 
-    // Single warm radial glow from upper-right, fading to black
-    var cx = gW * 0.78, cy = gH * 0.18;
-    var radius = Math.max(gW, gH) * 0.95;
+    // Cool warm-beige/taupe radial glow from upper-right, strictly neutral (no red channel dominance)
+    var cx = gW * 0.80, cy = gH * 0.15;
+    var radius = Math.max(gW, gH) * 1.0;
     var glow = gctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-    glow.addColorStop(0.0, "#4a3f34");
-    glow.addColorStop(0.25, "#2e2620");
-    glow.addColorStop(0.55, "#141110");
+    glow.addColorStop(0.0, "#4a453d");
+    glow.addColorStop(0.22, "#332f29");
+    glow.addColorStop(0.5, "#17140f");
+    glow.addColorStop(0.8, "#080706");
     glow.addColorStop(1.0, "#000000");
     gctx.fillStyle = glow;
     gctx.fillRect(0, 0, gW, gH);
 
-    // Film grain noise (generated once, cached)
+    // Neutral gray-beige film grain noise (equal RGB offset, no color-channel bias toward red)
     try {
       var imageData = gctx.getImageData(0, 0, gW, gH);
       var data = imageData.data;
       for (var i = 0; i < data.length; i += 4) {
-        var noise = (Math.random() - 0.5) * 45;
-        data[i] = Math.max(0, Math.min(255, data[i] + noise));
-        data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + noise));
-        data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + noise));
+        var noise = (Math.random() - 0.5) * 40;
+        data[i]   = Math.max(0, Math.min(255, data[i]   + noise));
+        data[i+1] = Math.max(0, Math.min(255, data[i+1] + noise));
+        data[i+2] = Math.max(0, Math.min(255, data[i+2] + noise));
       }
       gctx.putImageData(imageData, 0, 0);
     } catch (e) {

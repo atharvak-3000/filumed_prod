@@ -219,38 +219,18 @@ body[data-theme="dark"] {
   --shadow-lg:  0 12px 40px rgba(0, 0, 0, 0.35),
                 0 4px 16px rgba(0, 0, 0, 0.20);
 
-  background:
-    radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 55%),
-    var(--bg);
+  background: var(--bg);
 }
 
-/* Editorial dark: accent stays red — the old override to #f4f2ee
-   compensated for editorial's former black accent (#0d0d0c). */
+/* Editorial dark: accent stays red */
 body[data-dir="editorial"][data-theme="dark"] {
-  /* No override needed — red accent is visible on dark bg */
+  /* No override needed */
 }
 
 body[data-theme="dark"] .ph {
   background:
     repeating-linear-gradient(135deg, rgba(244, 242, 238, 0.045) 0 2px, transparent 2px 14px),
     linear-gradient(135deg, color-mix(in srgb, var(--accent) 13%, #15120f), #121010);
-}
-
-body[data-theme="dark"] .hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background: radial-gradient(55% 45% at 50% 38%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 72%);
-}
-
-body[data-theme="dark"] .cta::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(70% 60% at 50% 100%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%);
 }
 
 body[data-theme="dark"] .cta .ghost {
