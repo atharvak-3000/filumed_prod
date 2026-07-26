@@ -2543,4 +2543,146 @@ body[data-dir="swiss"] .video-ratio-box {
   .bento-item { grid-column: span 1 !important; grid-row: span 1 !important; }
 }
 
+/* ==========================================================================
+   CINEMATIC CREATION SHOWCASE SECTION ("We create; stories that stay")
+   ========================================================================== */
+.create-am-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 650px;
+  background: #050504;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  z-index: 5;
+}
+
+.cam-images {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cam-img {
+  position: absolute;
+  width: min(56vw, 680px);
+  height: min(56vh, 440px);
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  transform: scale(0.92) rotate(-2deg);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+  filter: grayscale(20%);
+}
+
+.cam-img.active {
+  opacity: 1;
+  z-index: 3;
+  filter: grayscale(0%);
+}
+
+/* Scattered Collage Offsets per Index */
+.cam-img.active[data-index="0"] {
+  transform: scale(1) rotate(-2.5deg) translate(-10px, -6px);
+}
+
+.cam-img.active[data-index="1"] {
+  transform: scale(1) rotate(2deg) translate(14px, 8px);
+}
+
+.cam-img.active[data-index="2"] {
+  transform: scale(1) rotate(-1.5deg) translate(-8px, 12px);
+}
+
+.cam-img.active[data-index="3"] {
+  transform: scale(1) rotate(3deg) translate(12px, -10px);
+}
+
+.cam-img.active[data-index="4"] {
+  transform: scale(1) rotate(-2deg) translate(-6px, 6px);
+}
+
+.cam-headline {
+  position: relative;
+  z-index: 10;
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 6vw, 5.25rem);
+  font-weight: 400;
+  color: #ffffff;
+  text-align: center;
+  margin: 0;
+  padding: 0 24px;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  pointer-events: none;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.cam-headline em {
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.95);
+  margin-right: 0.2em;
+}
+
+.cam-footer-text {
+  position: absolute;
+  bottom: 32px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 10;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+
+.cam-footer-text p {
+  margin: 0;
+}
+
+.cam-footer-text .dim {
+  font-size: 9.5px;
+  opacity: 0.45;
+  margin-top: 6px;
+  letter-spacing: 0.14em;
+}
+
+@media (max-width: 768px) {
+  .create-am-section {
+    height: 80vh;
+    min-height: 520px;
+  }
+
+  .cam-img {
+    width: min(82vw, 420px);
+    height: min(45vh, 320px);
+  }
+
+  .cam-headline {
+    font-size: clamp(2rem, 8vw, 3.25rem);
+  }
+
+  .cam-footer-text {
+    bottom: 20px;
+    font-size: 9.5px;
+  }
+
+  .cam-footer-text .dim {
+    font-size: 8.5px;
+  }
+}
+
 
