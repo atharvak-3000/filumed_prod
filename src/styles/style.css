@@ -2544,144 +2544,165 @@ body[data-dir="swiss"] .video-ratio-box {
 }
 
 /* ==========================================================================
-   CINEMATIC CREATION SHOWCASE SECTION ("We create; stories that stay")
+   SCROLL-PINNED CREATE-AM SHOWCASE SECTION
    ========================================================================== */
 .create-am-section {
   position: relative;
   width: 100%;
-  height: 100vh;
-  min-height: 650px;
-  background: #050504;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  isolation: isolate;
-  z-index: 5;
+  padding: 80px var(--pad-x);
+  background: transparent;
+  z-index: 2;
+  box-sizing: border-box;
 }
 
-.cam-images {
-  position: absolute;
-  inset: 0;
+.create-am-section.is-pinned {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 60px var(--pad-x) 40px;
+  overflow: hidden;
+}
+
+.cam-sticky-wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.cam-header {
+  text-align: center;
+}
+
+.cam-kicker {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent, #c5302a);
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.cam-title {
+  font-family: var(--display);
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.cam-stage {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
-  z-index: 2;
+  min-height: 380px;
+  max-height: 580px;
+  position: relative;
+  width: 100%;
+}
+
+.cam-img-stack {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  height: 100%;
+  min-height: 360px;
 }
 
 .cam-img {
   position: absolute;
-  width: min(56vw, 680px);
-  height: min(56vh, 440px);
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+  inset: 0;
   opacity: 0;
-  transform: scale(0.92) rotate(-2deg);
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
-  filter: grayscale(20%);
+  transform: scale(0.95);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
 }
 
 .cam-img.active {
   opacity: 1;
-  z-index: 3;
-  filter: grayscale(0%);
+  transform: scale(1);
+  pointer-events: auto;
+  z-index: 2;
 }
 
-/* Scattered Collage Offsets per Index */
-.cam-img.active[data-index="0"] {
-  transform: scale(1) rotate(-2.5deg) translate(-10px, -6px);
+.cam-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.cam-img.active[data-index="1"] {
-  transform: scale(1) rotate(2deg) translate(14px, 8px);
-}
-
-.cam-img.active[data-index="2"] {
-  transform: scale(1) rotate(-1.5deg) translate(-8px, 12px);
-}
-
-.cam-img.active[data-index="3"] {
-  transform: scale(1) rotate(3deg) translate(12px, -10px);
-}
-
-.cam-img.active[data-index="4"] {
-  transform: scale(1) rotate(-2deg) translate(-6px, 6px);
-}
-
-.cam-headline {
-  position: relative;
-  z-index: 10;
-  font-family: var(--display);
-  font-size: clamp(2.5rem, 6vw, 5.25rem);
-  font-weight: 400;
-  color: #ffffff;
-  text-align: center;
-  margin: 0;
-  padding: 0 24px;
-  line-height: 1.15;
-  letter-spacing: -0.015em;
-  pointer-events: none;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-}
-
-.cam-headline em {
-  font-style: italic;
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.95);
-  margin-right: 0.2em;
-}
-
-.cam-footer-text {
+.cam-caption {
   position: absolute;
-  bottom: 32px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  z-index: 10;
+  inset: auto 0 0 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 8, 7, 0.88) 100%);
+  padding: 32px var(--pad-x) 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cam-num {
   font-size: 11px;
   letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-  pointer-events: none;
+  color: var(--accent, #c5302a);
 }
 
-.cam-footer-text p {
+.cam-caption h3 {
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 2.2vw, 1.85rem);
+  font-weight: 400;
+  color: #ffffff;
   margin: 0;
 }
 
-.cam-footer-text .dim {
-  font-size: 9.5px;
-  opacity: 0.45;
-  margin-top: 6px;
-  letter-spacing: 0.14em;
+.cam-controls {
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+}
+
+.cam-dots {
+  display: flex;
+  gap: 12px;
+}
+
+.cam-dot {
+  width: 32px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.3s ease, width 0.3s ease;
+}
+
+.cam-dot:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.cam-dot.active {
+  background: #ffffff;
+  width: 48px;
 }
 
 @media (max-width: 768px) {
   .create-am-section {
-    height: 80vh;
-    min-height: 520px;
+    padding: 60px var(--pad-x);
   }
-
-  .cam-img {
-    width: min(82vw, 420px);
-    height: min(45vh, 320px);
+  .cam-stage {
+    min-height: 280px;
+    max-height: 420px;
   }
-
-  .cam-headline {
-    font-size: clamp(2rem, 8vw, 3.25rem);
-  }
-
-  .cam-footer-text {
-    bottom: 20px;
-    font-size: 9.5px;
-  }
-
-  .cam-footer-text .dim {
-    font-size: 8.5px;
+  .cam-caption {
+    padding: 20px;
   }
 }
 

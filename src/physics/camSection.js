@@ -1,4 +1,4 @@
-/* FILUMED — Interactive Cinematic Creation Showcase ("We create; stories that stay") */
+/* FILUMED — Scroll-pinned image reveal section */
 (function () {
   "use strict";
 
@@ -7,118 +7,149 @@
     if (!section) return;
 
     var images = section.querySelectorAll(".cam-img");
+    var dots = section.querySelectorAll(".cam-dot");
     if (!images.length) return;
 
     var currentIndex = 0;
+    var isLocked = false;
     var isTransitioning = false;
-    var autoplayTimer = null;
     var idleTimer = null;
-    var isVisible = false;
-    var touchStartY = 0;
+    var wheelAccum = 0;
+    var WHEEL_THRESHOLD = 35;
 
-    function setActive(index) {
-      if (index === currentIndex && images[index].classList.contains("active")) return;
-      
-      images.forEach(function (img, idx) {
-        if (idx === index) {
-          img.classList.add("active");
-        } else {
-          img.classList.remove("active");
-        }
+    function updateActiveImage() {
+      images.forEach(function (img, i) {
+        img.classList.toggle("active", i === currentIndex);
       });
-      currentIndex = index;
+      dots.forEach(function (dot, i) {
+        dot.classList.toggle("active", i === currentIndex);
+      });
     }
 
-    function step(dir) {
-      if (isTransitioning) return;
-      isTransitioning = true;
+    function lockScroll() {
+      if (isLocked) return;
+      isLocked = true;
+      section.classList.add("is-pinned");
+    }
 
-      var nextIndex = (currentIndex + dir + images.length) % images.length;
-      setActive(nextIndex);
+    function unlockScroll() {
+      if (!isLocked) return;
+      isLocked = false;
+      section.classList.remove("is-pinned");
+      clearTimeout(idleTimer);
+    }
+
+    function advance(direction) {
+      if (isTransitioning) return;
+      var next = currentIndex + direction;
+
+      if (next < 0) {
+        unlockScroll();
+        return;
+      }
+      if (next >= images.length) {
+        unlockScroll();
+        return;
+      }
+
+      isTransitioning = true;
+      currentIndex = next;
+      updateActiveImage();
+      resetIdleTimer();
 
       setTimeout(function () {
         isTransitioning = false;
+        wheelAccum = 0;
       }, 550);
     }
 
-    function resetAutoplayTimer() {
-      if (autoplayTimer) clearInterval(autoplayTimer);
-      if (idleTimer) clearTimeout(idleTimer);
-
-      // Pause for 3 seconds after user interaction before resuming autoplay
-      idleTimer = setTimeout(function () {
-        startAutoplay();
-      }, 3000);
+    function resetIdleTimer() {
+      clearTimeout(idleTimer);
+      if (isLocked) {
+        idleTimer = setTimeout(function () {
+          var nextDir = currentIndex >= images.length - 1 ? -1 : 1;
+          advance(nextDir);
+        }, 3200);
+      }
     }
 
-    function startAutoplay() {
-      if (autoplayTimer) clearInterval(autoplayTimer);
-      autoplayTimer = setInterval(function () {
-        if (isVisible && !isTransitioning) {
-          step(1);
+    dots.forEach(function (dot, idx) {
+      dot.addEventListener("click", function () {
+        if (isTransitioning || idx === currentIndex) return;
+        isTransitioning = true;
+        currentIndex = idx;
+        updateActiveImage();
+        resetIdleTimer();
+        setTimeout(function () { isTransitioning = false; }, 550);
+      });
+    });
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            if (!isLocked && (currentIndex === 0 || currentIndex === images.length - 1)) {
+              lockScroll();
+              resetIdleTimer();
+            }
+          } else {
+            unlockScroll();
+          }
+        });
+      },
+      { threshold: [0.5] }
+    );
+    observer.observe(section);
+
+    window.addEventListener(
+      "wheel",
+      function (e) {
+        if (!isLocked) return;
+        e.preventDefault();
+        if (isTransitioning) return;
+
+        wheelAccum += e.deltaY;
+        if (Math.abs(wheelAccum) >= WHEEL_THRESHOLD) {
+          var dir = wheelAccum > 0 ? 1 : -1;
+          advance(dir);
         }
-      }, 3500);
-    }
+      },
+      { passive: false }
+    );
 
-    // 1. Wheel Navigation (Debounced scroll steps)
-    section.addEventListener("wheel", function (e) {
-      if (Math.abs(e.deltaY) < 15) return;
-      resetAutoplayTimer();
-      var dir = e.deltaY > 0 ? 1 : -1;
-      step(dir);
-    }, { passive: true });
-
-    // 2. Keyboard Navigation (Arrow Keys when section is visible)
     window.addEventListener("keydown", function (e) {
-      if (!isVisible) return;
+      if (!isLocked) return;
       if (e.key === "ArrowDown" || e.key === "ArrowRight") {
         e.preventDefault();
-        resetAutoplayTimer();
-        step(1);
+        advance(1);
       } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
         e.preventDefault();
-        resetAutoplayTimer();
-        step(-1);
+        advance(-1);
       }
     });
 
-    // 3. Touch Navigation
-    section.addEventListener("touchstart", function (e) {
-      if (e.touches && e.touches.length) {
+    var touchStartY = 0;
+    window.addEventListener(
+      "touchstart",
+      function (e) {
         touchStartY = e.touches[0].clientY;
-      }
-    }, { passive: true });
+      },
+      { passive: true }
+    );
 
-    section.addEventListener("touchend", function (e) {
-      if (!e.changedTouches || !e.changedTouches.length) return;
-      var touchEndY = e.changedTouches[0].clientY;
-      var deltaY = touchStartY - touchEndY;
+    window.addEventListener(
+      "touchend",
+      function (e) {
+        if (!isLocked) return;
+        var delta = touchStartY - e.changedTouches[0].clientY;
+        if (Math.abs(delta) > 40) {
+          advance(delta > 0 ? 1 : -1);
+        }
+      },
+      { passive: true }
+    );
 
-      if (Math.abs(deltaY) > 40) {
-        resetAutoplayTimer();
-        step(deltaY > 0 ? 1 : -1);
-      }
-    }, { passive: true });
-
-    // 4. Intersection Observer for Visiblity & Autoplay Lifecycle
-    if ("IntersectionObserver" in window) {
-      var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          isVisible = entry.isIntersecting;
-          if (isVisible) {
-            startAutoplay();
-          } else {
-            if (autoplayTimer) clearInterval(autoplayTimer);
-            if (idleTimer) clearTimeout(idleTimer);
-          }
-        });
-      }, { threshold: 0.3 });
-
-      observer.observe(section);
-    } else {
-      isVisible = true;
-      startAutoplay();
-    }
+    updateActiveImage();
   }
 
   if (document.readyState === "loading") {
