@@ -17,7 +17,7 @@ export const FILUMED_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "motion": 1,
   "cursor": true,
   "grain": true,
-  "background": "Stars"
+  "background": "Grain"
 }/*EDITMODE-END*/;
 
 export default function FilumedTweaks() {

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Grainy Background</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+  }
+  #bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<script>
+  const canvas = document.getElementById('bg');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    draw();
+  }
+
+  function draw() {
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // Base diagonal gradient: warm brownish-gray band running from
+    // upper-right to lower-left, fading to black at the corners.
+    const grad = ctx.createLinearGradient(w, 0, 0, h);
+    grad.addColorStop(0.0, '#0a0a0a');
+    grad.addColorStop(0.28, '#3a332c');
+    grad.addColorStop(0.42, '#7a6b58');
+    grad.addColorStop(0.55, '#4a4038');
+    grad.addColorStop(0.7, '#141210');
+    grad.addColorStop(1.0, '#000000');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    // A second soft diagonal highlight band for depth
+    const grad2 = ctx.createLinearGradient(w * 0.9, 0, w * 0.1, h);
+    grad2.addColorStop(0.3, 'rgba(120,105,85,0.35)');
+    grad2.addColorStop(0.5, 'rgba(120,105,85,0.0)');
+    ctx.fillStyle = grad2;
+    ctx.fillRect(0, 0, w, h);
+
+    // Film grain noise overlay
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const noise = (Math.random() - 0.5) * 60;
+      data[i] = clamp(data[i] + noise);
+      data[i + 1] = clamp(data[i + 1] + noise);
+      data[i + 2] = clamp(data[i + 2] + noise);
+    }
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+  function clamp(v) {
+    return v < 0 ? 0 : v > 255 ? 255 : v;
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+</script>
+</body>
+</html>

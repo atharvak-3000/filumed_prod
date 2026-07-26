@@ -328,56 +328,14 @@
     }
   }
 
-  /* ---------- static grainy gradient ---------- */
-  function clampByte(v) { return v < 0 ? 0 : v > 255 ? 255 : v; }
-
-  function drawGrain() {
-    var w = canvas.width, h = canvas.height;
-    if (!w || !h) return;
-
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-    var grad = ctx.createLinearGradient(w, 0, 0, h);
-    grad.addColorStop(0.0, '#0a0a0a');
-    grad.addColorStop(0.28, '#3a332c');
-    grad.addColorStop(0.42, '#7a6b58');
-    grad.addColorStop(0.55, '#4a4038');
-    grad.addColorStop(0.7, '#141210');
-    grad.addColorStop(1.0, '#000000');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, w, h);
-
-    var grad2 = ctx.createLinearGradient(w * 0.9, 0, w * 0.1, h);
-    grad2.addColorStop(0.3, 'rgba(120,105,85,0.35)');
-    grad2.addColorStop(0.5, 'rgba(120,105,85,0.0)');
-    ctx.fillStyle = grad2;
-    ctx.fillRect(0, 0, w, h);
-
-    var imageData = ctx.getImageData(0, 0, w, h);
-    var data = imageData.data;
-    for (var i = 0; i < data.length; i += 4) {
-      var noise = (Math.random() - 0.5) * 60;
-      data[i] = clampByte(data[i] + noise);
-      data[i + 1] = clampByte(data[i + 1] + noise);
-      data[i + 2] = clampByte(data[i + 2] + noise);
-    }
-    ctx.putImageData(imageData, 0, 0);
-    ctx.restore();
-  }
-
   function resize() {
     DPR = Math.min(2, window.devicePixelRatio || 1);
-    W = window.innerWidth;
-    H = Math.max(window.innerHeight, document.documentElement.scrollHeight || 0);
+    W = window.innerWidth; H = window.innerHeight;
     canvas.width = W * DPR; canvas.height = H * DPR;
     canvas.style.width = W + "px"; canvas.style.height = H + "px";
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     initDust();
     initStars();
-    if (mode === "grain") {
-      drawGrain();
-    }
   }
 
   function readColors() {
@@ -436,18 +394,58 @@
     }
   }
 
+  /* ---------- grainy background engine (from grainy-background.html) ---------- */
+  function drawGrain() {
+    var w = W;
+    var h = H;
+
+    // Base diagonal gradient: warm brownish-gray band running from
+    // upper-right to lower-left, fading to black at the corners.
+    var grad = ctx.createLinearGradient(w, 0, 0, h);
+    grad.addColorStop(0.0, '#0a0a0a');
+    grad.addColorStop(0.28, '#3a332c');
+    grad.addColorStop(0.42, '#7a6b58');
+    grad.addColorStop(0.55, '#4a4038');
+    grad.addColorStop(0.7, '#141210');
+    grad.addColorStop(1.0, '#000000');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    // A second soft diagonal highlight band for depth
+    var grad2 = ctx.createLinearGradient(w * 0.9, 0, w * 0.1, h);
+    grad2.addColorStop(0.3, 'rgba(120,105,85,0.35)');
+    grad2.addColorStop(0.5, 'rgba(120,105,85,0.0)');
+    ctx.fillStyle = grad2;
+    ctx.fillRect(0, 0, w, h);
+
+    // Film grain noise overlay
+    try {
+      var imageData = ctx.getImageData(0, 0, w, h);
+      var data = imageData.data;
+      for (var i = 0; i < data.length; i += 4) {
+        var noise = (Math.random() - 0.5) * 60;
+        var r = data[i] + noise;
+        var g = data[i + 1] + noise;
+        var b = data[i + 2] + noise;
+        data[i] = r < 0 ? 0 : r > 255 ? 255 : r;
+        data[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
+        data[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
+      }
+      ctx.putImageData(imageData, 0, 0);
+    } catch (e) {
+      // Fallback in case of context restriction
+    }
+  }
+
   /* ---------- loop ---------- */
   function loop(now) {
-    if (mode === "grain") {
-      if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
-      return;
-    }
     frame++;
     smx += (mx - smx) * 0.08;
     smy += (my - smy) * 0.08;
     if (frame % 60 === 0) readColors();
     ctx.clearRect(0, 0, W, H);
-    if (mode === "stars") drawStars(now);
+    if (mode === "grain") drawGrain();
+    else if (mode === "stars") drawStars(now);
     else if (mode === "dust") drawDust();
     else if (mode === "dots") drawDots();
     else if (mode === "leak") drawLeak(now);
@@ -456,23 +454,10 @@
   }
 
   function setBg(m) {
-    var map = {
-      "Grain": "grain",
-      "Film grain": "grain",
-      "grain": "grain",
-      "Stars": "stars",
-      "Starfield": "stars",
-      "Film dust": "dust",
-      "Dot grid": "dots",
-      "Light leak": "leak",
-      "Smoke": "smoke",
-      "Red glow": "crimson",
-      "Crimson": "crimson",
-      "None": "none"
-    };
+    var map = { "Grain": "grain", "Grainy": "grain", "Stars": "stars", "Starfield": "stars", "Film dust": "dust", "Dot grid": "dots", "Light leak": "leak", "Smoke": "smoke", "Red glow": "crimson", "Crimson": "crimson", "None": "none" };
     var oldMode = mode;
-    mode = map[m] || m || "stars";
-    if (reduceMotion && mode !== "grain") mode = "none";
+    mode = map[m] || m || "grain";
+    if (reduceMotion) mode = "none";
     document.body.dataset.bg = mode;
 
     if (mode === "smoke") {
@@ -486,18 +471,13 @@
       canvas.style.display = mode === "none" ? "none" : "block";
     }
 
-    if (mode === "grain") {
-      drawGrain();
-      if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
-    } else {
-      if (mode !== "none" && mode !== "smoke" && rafId === null) rafId = requestAnimationFrame(loop);
-      if ((mode === "none" || mode === "smoke") && rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
-    }
+    if (mode !== "none" && mode !== "smoke" && rafId === null) rafId = requestAnimationFrame(loop);
+    if ((mode === "none" || mode === "smoke") && rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
   }
   window.__setBg = setBg;
 
   resize();
   readColors();
-  setBg("Stars");
+  setBg("Grain");
 })();
 

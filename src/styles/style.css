@@ -431,6 +431,7 @@ body[data-bg="crimson"] .cta-btn * {
 }
 
 body[data-bg="grain"] .btn-solid:hover,
+body[data-bg="stars"] .btn-solid:hover,
 body[data-bg="crimson"] .btn-solid:hover,
 body[data-bg="grain"] .cta-btn:hover,
 body[data-bg="stars"] .cta-btn:hover,
@@ -441,29 +442,24 @@ body[data-bg="crimson"] .cta-btn:hover {
   opacity: 0.95;
 }
 
-body[data-bg="grain"] .btn-ghost,
 body[data-bg="stars"] .btn-ghost,
 body[data-bg="crimson"] .btn-ghost {
   border-color: #ffffff !important;
   color: #ffffff !important;
 }
 
-body[data-bg="grain"] .btn-ghost:hover,
 body[data-bg="stars"] .btn-ghost:hover,
 body[data-bg="crimson"] .btn-ghost:hover {
   background: #ffffff !important;
   color: #0d0d0c !important;
 }
 
-body[data-bg="grain"] .chip,
 body[data-bg="stars"] .chip,
 body[data-bg="crimson"] .chip {
   border-color: rgba(255, 255, 255, 0.4) !important;
   color: #ffffff !important;
 }
 
-body[data-bg="grain"] .chip.on,
-body[data-bg="grain"] .chip:hover,
 body[data-bg="stars"] .chip.on,
 body[data-bg="stars"] .chip:hover,
 body[data-bg="crimson"] .chip.on,
