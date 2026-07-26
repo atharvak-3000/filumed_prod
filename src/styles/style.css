@@ -292,6 +292,7 @@ body {
   transition: background 0.4s ease;
 }
 
+body[data-bg="grain"],
 body[data-bg="stars"],
 body[data-bg="crimson"] {
   --bg: transparent;
@@ -306,6 +307,31 @@ body[data-bg="crimson"] {
   color: #ffffff;
 }
 
+body[data-bg="grain"] h1,
+body[data-bg="grain"] h2,
+body[data-bg="grain"] h3,
+body[data-bg="grain"] h4,
+body[data-bg="grain"] h5,
+body[data-bg="grain"] h6,
+body[data-bg="grain"] p,
+body[data-bg="grain"] span,
+body[data-bg="grain"] .logo-text,
+body[data-bg="grain"] .nav-links a.navlink,
+body[data-bg="grain"] .kicker,
+body[data-bg="grain"] .hero p.sub,
+body[data-bg="grain"] .about-copy p,
+body[data-bg="grain"] .stat .num,
+body[data-bg="grain"] .stat .lbl,
+body[data-bg="grain"] .svc .name,
+body[data-bg="grain"] .svc .go,
+body[data-bg="grain"] .card .title,
+body[data-bg="grain"] .card .client,
+body[data-bg="grain"] .card .meta,
+body[data-bg="grain"] .ph .ph-label,
+body[data-bg="grain"] .clients-row .cl,
+body[data-bg="grain"] footer .f-links a,
+body[data-bg="grain"] footer .copy,
+body[data-bg="grain"] .marquee-track .item,
 body[data-bg="stars"] h1,
 body[data-bg="stars"] h2,
 body[data-bg="stars"] h3,
@@ -359,6 +385,11 @@ body[data-bg="crimson"] .marquee-track .item {
   color: #ffffff !important;
 }
 
+body[data-bg="grain"] .accent,
+body[data-bg="grain"] .accent-w,
+body[data-bg="grain"] .l2,
+body[data-bg="grain"] .stat .num sup,
+body[data-bg="grain"] .ph-tag,
 body[data-bg="stars"] .accent,
 body[data-bg="stars"] .accent-w,
 body[data-bg="stars"] .l2,
@@ -372,6 +403,7 @@ body[data-bg="crimson"] .ph-tag {
   color: #ffffff !important;
 }
 
+body[data-bg="grain"] .bg-canvas,
 body[data-bg="stars"] .bg-canvas,
 body[data-bg="crimson"] .bg-canvas {
   image-rendering: -webkit-optimize-contrast;
@@ -381,8 +413,10 @@ body[data-bg="crimson"] .bg-canvas {
   backdrop-filter: none !important;
 }
 
+body[data-bg="grain"] .btn-solid,
 body[data-bg="stars"] .btn-solid,
 body[data-bg="crimson"] .btn-solid,
+body[data-bg="grain"] .cta-btn,
 body[data-bg="stars"] .cta-btn,
 body[data-bg="crimson"] .cta-btn {
   background: #ffffff !important;
@@ -390,13 +424,15 @@ body[data-bg="crimson"] .cta-btn {
   border-color: #ffffff !important;
 }
 
+body[data-bg="grain"] .cta-btn *,
 body[data-bg="stars"] .cta-btn *,
 body[data-bg="crimson"] .cta-btn * {
   color: #0d0d0c !important;
 }
 
-body[data-bg="stars"] .btn-solid:hover,
+body[data-bg="grain"] .btn-solid:hover,
 body[data-bg="crimson"] .btn-solid:hover,
+body[data-bg="grain"] .cta-btn:hover,
 body[data-bg="stars"] .cta-btn:hover,
 body[data-bg="crimson"] .cta-btn:hover {
   background: #ffffff !important;
@@ -405,24 +441,29 @@ body[data-bg="crimson"] .cta-btn:hover {
   opacity: 0.95;
 }
 
+body[data-bg="grain"] .btn-ghost,
 body[data-bg="stars"] .btn-ghost,
 body[data-bg="crimson"] .btn-ghost {
   border-color: #ffffff !important;
   color: #ffffff !important;
 }
 
+body[data-bg="grain"] .btn-ghost:hover,
 body[data-bg="stars"] .btn-ghost:hover,
 body[data-bg="crimson"] .btn-ghost:hover {
   background: #ffffff !important;
   color: #0d0d0c !important;
 }
 
+body[data-bg="grain"] .chip,
 body[data-bg="stars"] .chip,
 body[data-bg="crimson"] .chip {
   border-color: rgba(255, 255, 255, 0.4) !important;
   color: #ffffff !important;
 }
 
+body[data-bg="grain"] .chip.on,
+body[data-bg="grain"] .chip:hover,
 body[data-bg="stars"] .chip.on,
 body[data-bg="stars"] .chip:hover,
 body[data-bg="crimson"] .chip.on,
