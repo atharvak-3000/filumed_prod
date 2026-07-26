@@ -1766,6 +1766,39 @@ footer .f-links a:hover {
   color: var(--ink);
 }
 
+footer .f-socials {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+footer .f-socials a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+footer .f-socials a svg {
+  opacity: 0.7;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+footer .f-socials a:hover {
+  color: var(--ink);
+}
+
+footer .f-socials a:hover svg {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
 footer .copy {
   font-family: var(--mono);
   font-size: 11px;
@@ -1774,11 +1807,13 @@ footer .copy {
 }
 
 .scene-footer footer .f-links a,
+.scene-footer footer .f-socials a,
 .scene-footer footer .copy {
   color: rgba(250, 249, 247, 0.52);
 }
 
-.scene-footer footer .f-links a:hover {
+.scene-footer footer .f-links a:hover,
+.scene-footer footer .f-socials a:hover {
   color: #faf9f7;
 }
 
