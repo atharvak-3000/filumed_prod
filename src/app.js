@@ -582,35 +582,6 @@ import portfolioData from './data/portfolio.json';
     }, { passive: true });
   }
 
-  /* ---------- mobile navigation menu toggle ---------- */
-  var navToggle = document.getElementById("nav-toggle");
-  if (navToggle && navHeader) {
-    function toggleNavMenu(show) {
-      var isExpanded = typeof show === "boolean" ? show : !navHeader.classList.contains("nav-open");
-      navHeader.classList.toggle("nav-open", isExpanded);
-      navToggle.setAttribute("aria-expanded", isExpanded ? "true" : "false");
-      document.body.classList.toggle("nav-menu-open", isExpanded);
-    }
-
-    navToggle.addEventListener("click", function (e) {
-      e.stopPropagation();
-      toggleNavMenu();
-    });
-
-    var mobileNavLinks = navHeader.querySelectorAll(".nav-links a");
-    mobileNavLinks.forEach(function (link) {
-      link.addEventListener("click", function () {
-        toggleNavMenu(false);
-      });
-    });
-
-    window.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && navHeader.classList.contains("nav-open")) {
-        toggleNavMenu(false);
-      }
-    });
-  }
-
 
   /* ---------- boot ---------- */
   initDynamicInteractiveElements();
