@@ -14,7 +14,6 @@ import portfolioData from './data/portfolio.json';
     "short-film": "Short Films",
     "products": "Products",
     "hospitality-real-estate": "Hospitality & Real Estate",
-    "fb": "F&B",
     "documentary-travel": "Documentary & Travel"
   };
 
