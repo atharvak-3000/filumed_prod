@@ -97,7 +97,66 @@
     if (mode !== "none" && rafId === null) rafId = requestAnimationFrame(loop);
     if (mode === "none" && rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
   }
-  window.__setBg = setBg;
+  function setBgAdjust(exposure, contrast) {
+    if (exposure !== undefined) {
+      document.documentElement.style.setProperty("--bg-exposure", exposure + "%");
+    }
+    if (contrast !== undefined) {
+      document.documentElement.style.setProperty("--bg-contrast", contrast + "%");
+    }
+  }
+  window.__setBgAdjust = setBgAdjust;
+
+  function createBgControlsWidget() {
+    if (document.getElementById("bg-controls-widget")) return;
+    var widget = document.createElement("div");
+    widget.id = "bg-controls-widget";
+    widget.className = "bg-controls-widget";
+    widget.innerHTML = `
+      <div class="bg-controls-hd">
+        <span class="bg-controls-title">CANVAS LIGHTING</span>
+        <button class="bg-controls-reset" id="bg-reset-btn" type="button">RESET</button>
+      </div>
+      <div class="bg-controls-row">
+        <label for="bg-exp-slider">EXPOSURE <span id="bg-exp-val">100%</span></label>
+        <input type="range" id="bg-exp-slider" min="40" max="250" value="100" step="5" />
+      </div>
+      <div class="bg-controls-row">
+        <label for="bg-con-slider">CONTRAST <span id="bg-con-val">100%</span></label>
+        <input type="range" id="bg-con-slider" min="40" max="250" value="100" step="5" />
+      </div>
+    `;
+    document.body.appendChild(widget);
+
+    var expSlider = widget.querySelector("#bg-exp-slider");
+    var conSlider = widget.querySelector("#bg-con-slider");
+    var expVal = widget.querySelector("#bg-exp-val");
+    var conVal = widget.querySelector("#bg-con-val");
+    var resetBtn = widget.querySelector("#bg-reset-btn");
+
+    function update() {
+      var exp = expSlider.value;
+      var con = conSlider.value;
+      expVal.textContent = exp + "%";
+      conVal.textContent = con + "%";
+      setBgAdjust(exp, con);
+    }
+
+    expSlider.addEventListener("input", update);
+    conSlider.addEventListener("input", update);
+
+    resetBtn.addEventListener("click", function () {
+      expSlider.value = 100;
+      conSlider.value = 100;
+      update();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", createBgControlsWidget);
+  } else {
+    createBgControlsWidget();
+  }
 
   resize();
   setBg("grain");
