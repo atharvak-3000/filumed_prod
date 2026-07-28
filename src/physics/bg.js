@@ -26,30 +26,30 @@
     var w = W;
     var h = H;
 
-    // Darker warm gradient stops (30-40% reduced brightness on lighter stops)
-    var grad = gCtx.createLinearGradient(w, 0, 0, h);
-    grad.addColorStop(0.0, '#070707');
-    grad.addColorStop(0.28, '#26221c');
-    grad.addColorStop(0.42, '#504639');
-    grad.addColorStop(0.55, '#312a24');
-    grad.addColorStop(0.7, '#0d0b0a');
+    // High-contrast, deeper dark warm gradient stops
+    var grad = gCtx.createLinearGradient(w * 0.9, 0, w * 0.1, h);
+    grad.addColorStop(0.0, '#030303');
+    grad.addColorStop(0.25, '#16130f');
+    grad.addColorStop(0.40, '#2e261e');
+    grad.addColorStop(0.55, '#181410');
+    grad.addColorStop(0.75, '#060505');
     grad.addColorStop(1.0, '#000000');
     gCtx.fillStyle = grad;
     gCtx.fillRect(0, 0, w, h);
 
-    // Soft secondary diagonal highlight band
-    var grad2 = gCtx.createLinearGradient(w * 0.9, 0, w * 0.1, h);
-    grad2.addColorStop(0.3, 'rgba(80,70,55,0.22)');
-    grad2.addColorStop(0.5, 'rgba(80,70,55,0.0)');
+    // Subtle secondary diagonal highlight for rich contrast depth
+    var grad2 = gCtx.createLinearGradient(w * 0.85, 0, w * 0.15, h);
+    grad2.addColorStop(0.32, 'rgba(55,45,34,0.18)');
+    grad2.addColorStop(0.52, 'rgba(0,0,0,0.0)');
     gCtx.fillStyle = grad2;
     gCtx.fillRect(0, 0, w, h);
 
-    // Film grain noise overlay (generated once and cached)
+    // Film grain noise overlay (high-contrast crisp noise)
     try {
       var imageData = gCtx.getImageData(0, 0, grainCanvas.width, grainCanvas.height);
       var data = imageData.data;
       for (var i = 0; i < data.length; i += 4) {
-        var noise = (Math.random() - 0.5) * 55;
+        var noise = (Math.random() - 0.5) * 42;
         var r = data[i] + noise;
         var g = data[i + 1] + noise;
         var b = data[i + 2] + noise;
@@ -97,92 +97,7 @@
     if (mode !== "none" && rafId === null) rafId = requestAnimationFrame(loop);
     if (mode === "none" && rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
   }
-  var currentExposure = 100;
-  var currentContrast = 100;
-
-  function setBgAdjust(exposure, contrast) {
-    if (exposure !== undefined && exposure !== null) {
-      currentExposure = parseFloat(exposure);
-    }
-    if (contrast !== undefined && contrast !== null) {
-      currentContrast = parseFloat(contrast);
-    }
-
-    var bVal = (currentExposure / 100).toFixed(2);
-    var cVal = (currentContrast / 100).toFixed(2);
-
-    canvas.style.filter = "brightness(" + bVal + ") contrast(" + cVal + ")";
-    canvas.style.webkitFilter = "brightness(" + bVal + ") contrast(" + cVal + ")";
-
-    document.documentElement.style.setProperty("--bg-exposure", currentExposure + "%");
-    document.documentElement.style.setProperty("--bg-contrast", currentContrast + "%");
-
-    // Sync input sliders if present
-    var expSlider = document.getElementById("bg-exp-slider");
-    var conSlider = document.getElementById("bg-con-slider");
-    var expVal = document.getElementById("bg-exp-val");
-    var conVal = document.getElementById("bg-con-val");
-    if (expSlider && expSlider.value != currentExposure) {
-      expSlider.value = currentExposure;
-      if (expVal) expVal.textContent = currentExposure + "%";
-    }
-    if (conSlider && conSlider.value != currentContrast) {
-      conSlider.value = currentContrast;
-      if (conVal) conVal.textContent = currentContrast + "%";
-    }
-  }
-  window.__setBgAdjust = setBgAdjust;
-
-  function createBgControlsWidget() {
-    if (document.getElementById("bg-controls-widget")) return;
-    var widget = document.createElement("div");
-    widget.id = "bg-controls-widget";
-    widget.className = "bg-controls-widget";
-    widget.innerHTML = `
-      <div class="bg-controls-hd">
-        <span class="bg-controls-title">CANVAS LIGHTING</span>
-        <button class="bg-controls-reset" id="bg-reset-btn" type="button">RESET</button>
-      </div>
-      <div class="bg-controls-row">
-        <label for="bg-exp-slider">EXPOSURE <span id="bg-exp-val">100%</span></label>
-        <input type="range" id="bg-exp-slider" min="40" max="250" value="100" step="5" />
-      </div>
-      <div class="bg-controls-row">
-        <label for="bg-con-slider">CONTRAST <span id="bg-con-val">100%</span></label>
-        <input type="range" id="bg-con-slider" min="40" max="250" value="100" step="5" />
-      </div>
-    `;
-    document.body.appendChild(widget);
-
-    var expSlider = widget.querySelector("#bg-exp-slider");
-    var conSlider = widget.querySelector("#bg-con-slider");
-    var expVal = widget.querySelector("#bg-exp-val");
-    var conVal = widget.querySelector("#bg-con-val");
-    var resetBtn = widget.querySelector("#bg-reset-btn");
-
-    function update() {
-      var exp = parseFloat(expSlider.value);
-      var con = parseFloat(conSlider.value);
-      if (expVal) expVal.textContent = exp + "%";
-      if (conVal) conVal.textContent = con + "%";
-      setBgAdjust(exp, con);
-    }
-
-    expSlider.addEventListener("input", update);
-    conSlider.addEventListener("input", update);
-    expSlider.addEventListener("change", update);
-    conSlider.addEventListener("change", update);
-
-    resetBtn.addEventListener("click", function () {
-      setBgAdjust(100, 100);
-    });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", createBgControlsWidget);
-  } else {
-    createBgControlsWidget();
-  }
+  window.__setBg = setBg;
 
   resize();
   setBg("grain");

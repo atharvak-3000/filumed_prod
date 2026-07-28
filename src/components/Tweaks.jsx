@@ -17,9 +17,7 @@ export const FILUMED_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "motion": 1,
   "cursor": true,
   "grain": true,
-  "background": "Grain",
-  "bgExposure": 100,
-  "bgContrast": 100
+  "background": "Grain"
 }/*EDITMODE-END*/;
 
 export default function FilumedTweaks() {
@@ -59,14 +57,7 @@ export default function FilumedTweaks() {
     if (window.__setBg) window.__setBg(t.background);
   }, [t.background, t.accent, t.direction, t.theme]);
 
-  useEffect(() => {
-    if (window.__setBgAdjust) {
-      window.__setBgAdjust(t.bgExposure, t.bgContrast);
-    } else {
-      document.documentElement.style.setProperty("--bg-exposure", t.bgExposure + "%");
-      document.documentElement.style.setProperty("--bg-contrast", t.bgContrast + "%");
-    }
-  }, [t.bgExposure, t.bgContrast]);
+
 
   return (
     <TweaksPanel>
@@ -95,24 +86,6 @@ export default function FilumedTweaks() {
         value={t.background}
         options={["Grain", "Stars", "Red glow", "Film dust", "Dot grid", "Light leak", "Smoke", "None"]}
         onChange={(v) => setTweak("background", v)}
-      />
-      <TweakSlider
-        label="BG Exposure"
-        value={t.bgExposure}
-        min={40}
-        max={250}
-        step={5}
-        unit="%"
-        onChange={(v) => setTweak("bgExposure", v)}
-      />
-      <TweakSlider
-        label="BG Contrast"
-        value={t.bgContrast}
-        min={40}
-        max={250}
-        step={5}
-        unit="%"
-        onChange={(v) => setTweak("bgContrast", v)}
       />
       <TweakSection label="Motion" />
       <TweakSlider
