@@ -97,12 +97,38 @@
     if (mode !== "none" && rafId === null) rafId = requestAnimationFrame(loop);
     if (mode === "none" && rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
   }
+  var currentExposure = 100;
+  var currentContrast = 100;
+
   function setBgAdjust(exposure, contrast) {
-    if (exposure !== undefined) {
-      document.documentElement.style.setProperty("--bg-exposure", exposure + "%");
+    if (exposure !== undefined && exposure !== null) {
+      currentExposure = parseFloat(exposure);
     }
-    if (contrast !== undefined) {
-      document.documentElement.style.setProperty("--bg-contrast", contrast + "%");
+    if (contrast !== undefined && contrast !== null) {
+      currentContrast = parseFloat(contrast);
+    }
+
+    var bVal = (currentExposure / 100).toFixed(2);
+    var cVal = (currentContrast / 100).toFixed(2);
+
+    canvas.style.filter = "brightness(" + bVal + ") contrast(" + cVal + ")";
+    canvas.style.webkitFilter = "brightness(" + bVal + ") contrast(" + cVal + ")";
+
+    document.documentElement.style.setProperty("--bg-exposure", currentExposure + "%");
+    document.documentElement.style.setProperty("--bg-contrast", currentContrast + "%");
+
+    // Sync input sliders if present
+    var expSlider = document.getElementById("bg-exp-slider");
+    var conSlider = document.getElementById("bg-con-slider");
+    var expVal = document.getElementById("bg-exp-val");
+    var conVal = document.getElementById("bg-con-val");
+    if (expSlider && expSlider.value != currentExposure) {
+      expSlider.value = currentExposure;
+      if (expVal) expVal.textContent = currentExposure + "%";
+    }
+    if (conSlider && conSlider.value != currentContrast) {
+      conSlider.value = currentContrast;
+      if (conVal) conVal.textContent = currentContrast + "%";
     }
   }
   window.__setBgAdjust = setBgAdjust;
@@ -135,20 +161,20 @@
     var resetBtn = widget.querySelector("#bg-reset-btn");
 
     function update() {
-      var exp = expSlider.value;
-      var con = conSlider.value;
-      expVal.textContent = exp + "%";
-      conVal.textContent = con + "%";
+      var exp = parseFloat(expSlider.value);
+      var con = parseFloat(conSlider.value);
+      if (expVal) expVal.textContent = exp + "%";
+      if (conVal) conVal.textContent = con + "%";
       setBgAdjust(exp, con);
     }
 
     expSlider.addEventListener("input", update);
     conSlider.addEventListener("input", update);
+    expSlider.addEventListener("change", update);
+    conSlider.addEventListener("change", update);
 
     resetBtn.addEventListener("click", function () {
-      expSlider.value = 100;
-      conSlider.value = 100;
-      update();
+      setBgAdjust(100, 100);
     });
   }
 
