@@ -84,7 +84,7 @@ export default function FilumedTweaks() {
       <TweakSelect
         label="Motion layer"
         value={t.background}
-        options={["Grain", "Stars", "Red glow", "Film dust", "Dot grid", "Light leak", "Smoke", "None"]}
+        options={["Grain", "Stars", "Red glow", "Film dust", "Dot grid", "Light leak", "Smoke", "Liquid flow", "None"]}
         onChange={(v) => setTweak("background", v)}
       />
       <TweakSection label="Motion" />

@@ -12,6 +12,18 @@ import SceneSection from './components/SceneSection';
       <FilumedTweaks />
     </React.StrictMode>
   );
+
+  // Toggle tweaks panel via 'T' key when running standalone
+  window.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === "t" && e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+      const panel = document.querySelector(".twk-panel");
+      if (panel) {
+        window.postMessage({ type: "__deactivate_edit_mode" }, "*");
+      } else {
+        window.postMessage({ type: "__activate_edit_mode" }, "*");
+      }
+    }
+  });
 })();
 
 (function mountScene() {
@@ -25,3 +37,4 @@ import SceneSection from './components/SceneSection';
     );
   }
 })();
+
