@@ -48,7 +48,6 @@
   var grainNeedsUpdate = true;
 
   function generateGrainTexture() {
-<<<<<<< Updated upstream
     if (!canvas.width || !canvas.height) return;
     grainCanvas.width = canvas.width;
     grainCanvas.height = canvas.height;
@@ -78,23 +77,10 @@
     gCtx.fillRect(0, 0, w, h);
 
     // Film grain noise overlay (high-contrast crisp noise)
-=======
-    var gW = Math.min(W, 800), gH = Math.min(H, 600);
-    if (!gW || !gH) return;
-    grainCanvas.width = gW;
-    grainCanvas.height = gH;
-    var gctx = grainCanvas.getContext("2d");
-
-    gctx.fillStyle = "#050504";
-    gctx.fillRect(0, 0, gW, gH);
-
-    // Add subtle ambient grain pattern
->>>>>>> Stashed changes
     try {
       var imageData = gCtx.getImageData(0, 0, grainCanvas.width, grainCanvas.height);
       var data = imageData.data;
       for (var i = 0; i < data.length; i += 4) {
-<<<<<<< Updated upstream
         var noise = (Math.random() - 0.5) * 42;
         var r = data[i] + noise;
         var g = data[i + 1] + noise;
@@ -102,12 +88,6 @@
         data[i] = r < 0 ? 0 : r > 255 ? 255 : r;
         data[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
         data[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
-=======
-        var noise = (Math.random() - 0.5) * 28;
-        data[i]   = Math.max(0, Math.min(255, data[i]   + noise));
-        data[i+1] = Math.max(0, Math.min(255, data[i+1] + noise));
-        data[i+2] = Math.max(0, Math.min(255, data[i+2] + noise));
->>>>>>> Stashed changes
       }
       gCtx.putImageData(imageData, 0, 0);
     } catch (e) {
