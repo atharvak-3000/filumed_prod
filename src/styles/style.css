@@ -1527,7 +1527,7 @@ body[data-dir="editorial"] .reel:hover .play {
   position: relative;
   margin-top: var(--gap-section);
   overflow: hidden;
-  background: #080807;
+  background: transparent;
   color: #faf9f7;
   isolation: isolate;
 }
@@ -1739,7 +1739,7 @@ body[data-dir="editorial"] .cta h2 .accent-w {
 
 /* ---------- footer ---------- */
 footer {
-  border-top: var(--border-w) solid var(--line);
+  border-top: none;
   margin-top: var(--gap-section);
   padding: 44px var(--pad-x);
   display: flex;
@@ -1751,7 +1751,7 @@ footer {
 
 .scene-footer footer {
   margin-top: 0;
-  border-top: 1px solid rgba(250, 249, 247, 0.12);
+  border-top: none;
   padding-top: 36px;
   padding-bottom: 44px;
 }
