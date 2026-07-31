@@ -103,11 +103,24 @@ import portfolioData from './data/portfolio.json';
     var WORDS = ["WE", "MAKE", "BRANDS", "TALK"];
     var OUTLINE_LAST_N = 2;
 
-    var LETTER_STAGGER = 28;
-    var HOLD_TIME = 300;
-    var EXIT_STAGGER = 18;
-    var LETTER_IN_DUR = 260;
-    var LETTER_OUT_DUR = 160;
+    var counterEl = document.getElementById("loader-counter");
+    var counterVal = 1;
+    var counterTimer = setInterval(function () {
+      if (!loader || counterVal > 100) {
+        clearInterval(counterTimer);
+        return;
+      }
+      if (counterEl) {
+        counterEl.textContent = (counterVal < 10 ? '0' : '') + counterVal;
+      }
+      counterVal += 1;
+    }, 16);
+
+    var LETTER_STAGGER = 18;
+    var HOLD_TIME = 180;
+    var EXIT_STAGGER = 12;
+    var LETTER_IN_DUR = 180;
+    var LETTER_OUT_DUR = 120;
 
     var IN_KEYFRAMES = [
       { transform: 'translateY(16px)', opacity: 0 },
@@ -200,9 +213,11 @@ import portfolioData from './data/portfolio.json';
 
     chain.then(function () {
       if (!loader) return;
+      clearInterval(counterTimer);
+      if (counterEl) counterEl.textContent = "100";
       if (stage) stage.style.opacity = '0';
       loader.classList.add("reveal-active");
-      return wait(1100);
+      return wait(900);
     }).then(function () {
       dismissLoader();
     });
