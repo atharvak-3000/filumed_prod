@@ -86,29 +86,9 @@ import portfolioData from './data/portfolio.json';
   // Render before selecting DOM components
   renderPortfolio();
 
-  /* ---------- loader: kinetic typography, audio & logo reveal ---------- */
+  /* ---------- loader: kinetic typography & logo reveal ---------- */
   var loader = document.getElementById("loader");
-  var loaderAudio = null;
-
-  function getLoaderAudio() {
-    if (!loaderAudio) {
-      loaderAudio = new Audio("/camera-shutter.wav");
-      loaderAudio.preload = "auto";
-    }
-    return loaderAudio;
-  }
-
-  function stopLoaderAudio() {
-    if (loaderAudio) {
-      try {
-        loaderAudio.pause();
-        loaderAudio.currentTime = 0;
-      } catch (e) {}
-    }
-  }
-
   function dismissLoader() {
-    stopLoaderAudio();
     if (!loader || loader.classList.contains("gone")) return;
     loader.classList.add("gone");
     setTimeout(function () { loader.remove(); loader = null; }, 800);
@@ -119,7 +99,6 @@ import portfolioData from './data/portfolio.json';
     if (!loader) { startHeroReveal(); return; }
     if (reduceMotion || document.body.dataset.loader === "off") { dismissLoader(); return; }
 
-    stopLoaderAudio();
     var stage = document.getElementById("word-stage");
     var WORDS = ["WE", "MAKE", "BRANDS", "TALK"];
     var OUTLINE_LAST_N = 2;
@@ -224,18 +203,6 @@ import portfolioData from './data/portfolio.json';
       chain = chain.then(function () {
         if (!loader) return;
         var spans = buildWord(word);
-
-        if (word === "TALK") {
-          var audio = getLoaderAudio();
-          audio.currentTime = 0;
-          var playPromise = audio.play();
-          if (playPromise && typeof playPromise.catch === "function") {
-            playPromise.catch(function () {
-              /* Browser autoplay restriction handled gracefully */
-            });
-          }
-        }
-
         return animateIn(spans).then(function () {
           return wait(HOLD_TIME);
         }).then(function () {
@@ -246,7 +213,6 @@ import portfolioData from './data/portfolio.json';
 
     chain.then(function () {
       if (!loader) return;
-      stopLoaderAudio();
       clearInterval(counterTimer);
       if (counterEl) counterEl.textContent = "100";
       if (stage) stage.style.opacity = '0';
@@ -719,20 +685,31 @@ import portfolioData from './data/portfolio.json';
   }
 
 
+  /* ---------- camera click sound handler for "Start a project" button ---------- */
+  var clickSound = document.getElementById('clickSound');
+  if (!clickSound) {
+    clickSound = new Audio('/camera-click.mp3');
+    clickSound.preload = 'auto';
+  }
+
+  document.addEventListener('click', function (e) {
+    var startBtn = e.target.closest('#start-project-btn, .cta-btn, a[href^="mailto:"]');
+    if (startBtn) {
+      if (!clickSound) {
+        clickSound = document.getElementById('clickSound') || new Audio('/camera-click.mp3');
+      }
+      clickSound.currentTime = 0;
+      var playPromise = clickSound.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(function (err) {
+          // Autoplay / permission edge cases — fail silently, don't break button or mailto navigation
+        });
+      }
+    }
+  });
+
   /* ---------- boot ---------- */
   initDynamicInteractiveElements();
   initReveals();
-  // Camera shutter audio trigger on "Start a project" CTA click
-  document.querySelectorAll('a[href^="mailto:"], .cta a.btn').forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var audio = getLoaderAudio();
-      audio.currentTime = 0;
-      var playPromise = audio.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(function () {});
-      }
-    });
-  });
-
   runLoader();
 })();
