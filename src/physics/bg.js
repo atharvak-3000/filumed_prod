@@ -60,18 +60,18 @@
 
     // High-contrast, deeper dark warm gradient stops
     var grad = gCtx.createLinearGradient(w * 0.9, 0, w * 0.1, h);
-    grad.addColorStop(0.0, '#030303');
-    grad.addColorStop(0.25, '#16130f');
-    grad.addColorStop(0.40, '#2e261e');
-    grad.addColorStop(0.55, '#181410');
-    grad.addColorStop(0.75, '#060505');
+    grad.addColorStop(0.0, '#000000');
+    grad.addColorStop(0.20, '#090807');
+    grad.addColorStop(0.38, '#1f1914');
+    grad.addColorStop(0.55, '#0d0a08');
+    grad.addColorStop(0.75, '#030202');
     grad.addColorStop(1.0, '#000000');
     gCtx.fillStyle = grad;
     gCtx.fillRect(0, 0, w, h);
 
     // Subtle secondary diagonal highlight for rich contrast depth
     var grad2 = gCtx.createLinearGradient(w * 0.85, 0, w * 0.15, h);
-    grad2.addColorStop(0.32, 'rgba(55,45,34,0.18)');
+    grad2.addColorStop(0.32, 'rgba(65, 52, 38, 0.24)');
     grad2.addColorStop(0.52, 'rgba(0,0,0,0.0)');
     gCtx.fillStyle = grad2;
     gCtx.fillRect(0, 0, w, h);
@@ -81,7 +81,7 @@
       var imageData = gCtx.getImageData(0, 0, grainCanvas.width, grainCanvas.height);
       var data = imageData.data;
       for (var i = 0; i < data.length; i += 4) {
-        var noise = (Math.random() - 0.5) * 42;
+        var noise = (Math.random() - 0.5) * 52;
         var r = data[i] + noise;
         var g = data[i + 1] + noise;
         var b = data[i + 2] + noise;
@@ -191,7 +191,7 @@
   }
 
   function drawDarkBase() {
-    ctx.fillStyle = "#050504";
+    ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, W, H);
   }
 
@@ -203,15 +203,15 @@
     
     if (mode === "red-glow") {
       // Crimson/red-curtain cinema glow
-      glow.addColorStop(0.0, "rgba(224, 24, 27, 0.22)");
-      glow.addColorStop(0.3, "rgba(100, 10, 15, 0.12)");
-      glow.addColorStop(0.7, "rgba(20, 2, 4, 0.05)");
+      glow.addColorStop(0.0, "rgba(224, 24, 27, 0.25)");
+      glow.addColorStop(0.3, "rgba(100, 10, 15, 0.14)");
+      glow.addColorStop(0.7, "rgba(20, 2, 4, 0.04)");
       glow.addColorStop(1.0, "rgba(0, 0, 0, 0)");
     } else {
-      // Neutral warm-taupe glow
-      glow.addColorStop(0.0, "rgba(74, 69, 61, 0.35)");
-      glow.addColorStop(0.3, "rgba(43, 39, 34, 0.2)");
-      glow.addColorStop(0.7, "rgba(23, 20, 15, 0.08)");
+      // High-contrast warm-taupe glow
+      glow.addColorStop(0.0, "rgba(95, 82, 68, 0.45)");
+      glow.addColorStop(0.3, "rgba(45, 38, 30, 0.22)");
+      glow.addColorStop(0.7, "rgba(14, 11, 8, 0.06)");
       glow.addColorStop(1.0, "rgba(0, 0, 0, 0)");
     }
     

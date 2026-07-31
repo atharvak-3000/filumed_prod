@@ -201,23 +201,23 @@ body[data-dir="swiss"] {
 
 /* ---------- dark mode ---------- */
 body[data-theme="dark"] {
-  --bg:             #0f0e0d;
-  --ink:            #f4f2ee;
-  --ink-soft:       #9b968e;
-  --surface:        #1a1918;
-  --surface-hover:  #242321;
-  --border:         rgba(244, 242, 238, 0.12);
-  --border-strong:  rgba(244, 242, 238, 0.22);
+  --bg:             #060505;
+  --ink:            #ffffff;
+  --ink-soft:       #a39e95;
+  --surface:        #11100f;
+  --surface-hover:  #191816;
+  --border:         rgba(255, 255, 255, 0.14);
+  --border-strong:  rgba(255, 255, 255, 0.28);
   --focus-ring:     rgba(220, 80, 70, 0.40);
-  --line:           rgba(244, 242, 238, 0.22);
-  --hairline:       rgba(244, 242, 238, 0.12);
+  --line:           rgba(255, 255, 255, 0.25);
+  --hairline:       rgba(255, 255, 255, 0.14);
 
-  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.20),
-                0 1px 3px rgba(0, 0, 0, 0.15);
-  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.25),
-                0 2px 6px rgba(0, 0, 0, 0.15);
-  --shadow-lg:  0 12px 40px rgba(0, 0, 0, 0.35),
-                0 4px 16px rgba(0, 0, 0, 0.20);
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.35),
+                0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.45),
+                0 2px 6px rgba(0, 0, 0, 0.30);
+  --shadow-lg:  0 12px 40px rgba(0, 0, 0, 0.55),
+                0 4px 16px rgba(0, 0, 0, 0.35);
 
   background: var(--bg);
 }
@@ -230,7 +230,7 @@ body[data-dir="editorial"][data-theme="dark"] {
 body[data-theme="dark"] .ph {
   background:
     repeating-linear-gradient(135deg, rgba(244, 242, 238, 0.045) 0 2px, transparent 2px 14px),
-    linear-gradient(135deg, color-mix(in srgb, var(--accent) 13%, #15120f), #121010);
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 13%, #0d0b09), #080706);
 }
 
 body[data-theme="dark"] .cta .ghost {
@@ -238,7 +238,7 @@ body[data-theme="dark"] .cta .ghost {
 }
 
 body[data-theme="dark"][data-grain="on"] .grain {
-  opacity: 0.09;
+  opacity: 0.12;
 }
 
 body[data-theme="dark"] .btn-solid:hover {
