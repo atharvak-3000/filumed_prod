@@ -94,7 +94,7 @@ export default function SceneSection() {
 
   return (
     <section ref={sectionRef} className="cta-section">
-      <div className="ghost-watermark" aria-hidden="true">FILM</div>
+      <div className="ghost-watermark" aria-hidden="true">FLMD</div>
       <div className="cta-spotlight" aria-hidden="true" />
       <div className="cta-inner-wrap">
         <div className="cta-kicker">
