@@ -87,8 +87,11 @@ import portfolioData from './data/portfolio.json';
   renderPortfolio();
 
   /* ---------- camera shutter audio player (mixkit-camera-shutter-hard-click-1430) ---------- */
-  var shutterAudio = new Audio("/camera-click.mp3");
-  shutterAudio.preload = "auto";
+  var cameraClickAudio = null;
+  try {
+    cameraClickAudio = new Audio("/camera-click.mp3");
+    cameraClickAudio.preload = "auto";
+  } catch (e) {}
 
   var globalAudioCtx = null;
   function getAudioContext() {
@@ -105,52 +108,99 @@ import portfolioData from './data/portfolio.json';
   }
 
   function unlockAudio() {
-    try {
-      shutterAudio.load();
-    } catch (e) {}
+    if (cameraClickAudio) {
+      try { cameraClickAudio.load(); } catch (e) {}
+    }
     getAudioContext();
   }
-  window.addEventListener("pointerdown", unlockAudio, { passive: true, once: true });
-  window.addEventListener("touchstart", unlockAudio, { passive: true, once: true });
-  window.addEventListener("keydown", unlockAudio, { passive: true, once: true });
-  window.addEventListener("mousemove", unlockAudio, { passive: true, once: true });
+  window.addEventListener("pointerdown", unlockAudio, { passive: true });
+  window.addEventListener("touchstart", unlockAudio, { passive: true });
+  window.addEventListener("keydown", unlockAudio, { passive: true });
+  window.addEventListener("mousemove", unlockAudio, { passive: true });
 
   function playCameraShutterSound() {
-    try {
-      var soundClone = shutterAudio.cloneNode();
-      soundClone.volume = 0.85;
-      var playPromise = soundClone.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(function () {
-          var ctx = getAudioContext();
-          if (ctx) {
-            if (ctx.state === 'suspended') ctx.resume();
-            var now = ctx.currentTime;
-            var bufferSize = Math.floor(ctx.sampleRate * 0.04);
-            var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            var output = buffer.getChannelData(0);
-            for (var i = 0; i < bufferSize; i++) {
-              output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.1));
-            }
-            var whiteNoise = ctx.createBufferSource();
-            whiteNoise.buffer = buffer;
-            var filter = ctx.createBiquadFilter();
-            filter.type = 'highpass';
-            filter.frequency.setValueAtTime(2200, now);
-            var gain = ctx.createGain();
-            gain.gain.setValueAtTime(0.5, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-            whiteNoise.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
-            whiteNoise.start(now);
-            whiteNoise.stop(now + 0.04);
-          }
-        });
+    var played = false;
+    if (cameraClickAudio) {
+      try {
+        var snd = cameraClickAudio.cloneNode();
+        snd.volume = 0.9;
+        var p = snd.play();
+        if (p !== undefined) {
+          p.then(function() {
+            played = true;
+          }).catch(function() {
+            synthShutter();
+          });
+        }
+      } catch (e) {
+        synthShutter();
       }
-    } catch (e) {
-      // Audio fallback
+    } else {
+      synthShutter();
     }
+  }
+
+  function synthShutter() {
+    try {
+      var ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') {
+        ctx.resume().then(function() { doSynth(ctx); }).catch(function(){});
+      } else {
+        doSynth(ctx);
+      }
+    } catch (e) {}
+  }
+
+  function doSynth(ctx) {
+    try {
+      var now = ctx.currentTime;
+      var bufSize = Math.floor(ctx.sampleRate * 0.045);
+      var buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+      var data = buf.getChannelData(0);
+      for (var i = 0; i < bufSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.12));
+      }
+      var noise = ctx.createBufferSource();
+      noise.buffer = buf;
+
+      var filter = ctx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.setValueAtTime(2000, now);
+
+      var gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.7, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.045);
+
+      var buf2Size = Math.floor(ctx.sampleRate * 0.035);
+      var buf2 = ctx.createBuffer(1, buf2Size, ctx.sampleRate);
+      var data2 = buf2.getChannelData(0);
+      for (var j = 0; j < buf2Size; j++) {
+        data2[j] = (Math.random() * 2 - 1) * Math.exp(-j / (buf2Size * 0.1));
+      }
+      var noise2 = ctx.createBufferSource();
+      noise2.buffer = buf2;
+
+      var filter2 = ctx.createBiquadFilter();
+      filter2.type = 'highpass';
+      filter2.frequency.setValueAtTime(2800, now + 0.04);
+
+      var gain2 = ctx.createGain();
+      gain2.gain.setValueAtTime(0.6, now + 0.04);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
+
+      noise2.connect(filter2);
+      filter2.connect(gain2);
+      gain2.connect(ctx.destination);
+      noise2.start(now + 0.04);
+      noise2.stop(now + 0.075);
+    } catch (e) {}
   }
 
   /* ---------- loader: kinetic typography & logo reveal ---------- */
