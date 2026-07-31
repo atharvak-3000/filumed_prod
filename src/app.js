@@ -86,6 +86,91 @@ import portfolioData from './data/portfolio.json';
   // Render before selecting DOM components
   renderPortfolio();
 
+  /* ---------- audio context pre-warmer for 100% reliable camera click on reload ---------- */
+  var globalAudioCtx = null;
+  function getAudioContext() {
+    if (!globalAudioCtx) {
+      var AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        globalAudioCtx = new AudioCtx();
+      }
+    }
+    if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+      globalAudioCtx.resume().catch(function(){});
+    }
+    return globalAudioCtx;
+  }
+
+  function unlockAudio() {
+    getAudioContext();
+  }
+  window.addEventListener("pointerdown", unlockAudio, { passive: true, once: true });
+  window.addEventListener("touchstart", unlockAudio, { passive: true, once: true });
+  window.addEventListener("keydown", unlockAudio, { passive: true, once: true });
+  window.addEventListener("mousemove", unlockAudio, { passive: true, once: true });
+
+  function playCameraShutterSound() {
+    try {
+      var ctx = getAudioContext();
+      if (!ctx) return;
+
+      var playAudio = function() {
+        var now = ctx.currentTime;
+        function playSnap(time, pitch, duration, volume) {
+          var bufferSize = Math.floor(ctx.sampleRate * duration);
+          var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          var output = buffer.getChannelData(0);
+          for (var i = 0; i < bufferSize; i++) {
+            output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.12));
+          }
+          var whiteNoise = ctx.createBufferSource();
+          whiteNoise.buffer = buffer;
+
+          var filter = ctx.createBiquadFilter();
+          filter.type = 'highpass';
+          filter.frequency.setValueAtTime(pitch, time);
+
+          var gain = ctx.createGain();
+          gain.gain.setValueAtTime(volume, time);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+          whiteNoise.connect(filter);
+          filter.connect(gain);
+          gain.connect(ctx.destination);
+
+          whiteNoise.start(time);
+          whiteNoise.stop(time + duration);
+
+          var osc = ctx.createOscillator();
+          var oscGain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(180, time);
+          osc.frequency.exponentialRampToValueAtTime(30, time + duration);
+
+          oscGain.gain.setValueAtTime(volume * 0.6, time);
+          oscGain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+          osc.connect(oscGain);
+          oscGain.connect(ctx.destination);
+
+          osc.start(time);
+          osc.stop(time + duration);
+        }
+
+        playSnap(now, 2000, 0.035, 0.55);
+        playSnap(now + 0.045, 2600, 0.03, 0.45);
+      };
+
+      if (ctx.state === 'suspended') {
+        ctx.resume().then(playAudio).catch(function(){});
+      } else {
+        playAudio();
+      }
+    } catch (e) {
+      // Audio fallback
+    }
+  }
+
   /* ---------- loader: kinetic typography & logo reveal ---------- */
   var loader = document.getElementById("loader");
   function dismissLoader() {
@@ -202,6 +287,9 @@ import portfolioData from './data/portfolio.json';
     WORDS.forEach(function (word) {
       chain = chain.then(function () {
         if (!loader) return;
+        if (word === "TALK") {
+          playCameraShutterSound();
+        }
         var spans = buildWord(word);
         return animateIn(spans).then(function () {
           return wait(HOLD_TIME);
@@ -210,64 +298,6 @@ import portfolioData from './data/portfolio.json';
         });
       });
     });
-
-  function playCameraShutterSound() {
-    try {
-      var AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      var ctx = new AudioCtx();
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-      var now = ctx.currentTime;
-
-      function playSnap(time, pitch, duration, volume) {
-        var bufferSize = Math.floor(ctx.sampleRate * duration);
-        var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        var output = buffer.getChannelData(0);
-        for (var i = 0; i < bufferSize; i++) {
-          output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
-        }
-        var whiteNoise = ctx.createBufferSource();
-        whiteNoise.buffer = buffer;
-
-        var filter = ctx.createBiquadFilter();
-        filter.type = 'highpass';
-        filter.frequency.setValueAtTime(pitch, time);
-
-        var gain = ctx.createGain();
-        gain.gain.setValueAtTime(volume, time);
-        gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-
-        whiteNoise.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-
-        whiteNoise.start(time);
-        whiteNoise.stop(time + duration);
-
-        var osc = ctx.createOscillator();
-        var oscGain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(160, time);
-        osc.frequency.exponentialRampToValueAtTime(40, time + duration);
-
-        oscGain.gain.setValueAtTime(volume * 0.5, time);
-        oscGain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-
-        osc.connect(oscGain);
-        oscGain.connect(ctx.destination);
-
-        osc.start(time);
-        osc.stop(time + duration);
-      }
-
-      playSnap(now, 1800, 0.035, 0.45);
-      playSnap(now + 0.045, 2400, 0.03, 0.4);
-    } catch (e) {
-      // Audio fallback
-    }
-  }
 
     chain.then(function () {
       if (!loader) return;
