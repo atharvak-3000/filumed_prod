@@ -86,7 +86,7 @@ import portfolioData from './data/portfolio.json';
   // Render before selecting DOM components
   renderPortfolio();
 
-  /* ---------- loader: film-leader countdown ---------- */
+  /* ---------- loader: kinetic typography & logo reveal ---------- */
   var loader = document.getElementById("loader");
   function dismissLoader() {
     if (!loader || loader.classList.contains("gone")) return;
@@ -94,30 +94,118 @@ import portfolioData from './data/portfolio.json';
     setTimeout(function () { loader.remove(); loader = null; }, 800);
     startHeroReveal();
   }
+
   function runLoader() {
     if (!loader) { startHeroReveal(); return; }
     if (reduceMotion || document.body.dataset.loader === "off") { dismissLoader(); return; }
-    var numEl = loader.querySelector(".num");
-    var sweep = loader.querySelector(".sweep");
-    var nums = ["3", "2", "1"];
-    var i = 0, stepMs = 520;
+
+    var stage = document.getElementById("word-stage");
+    var WORDS = ["WE", "MAKE", "BRANDS", "TALK"];
+    var OUTLINE_LAST_N = 2;
+
+    var LETTER_STAGGER = 28;
+    var HOLD_TIME = 300;
+    var EXIT_STAGGER = 18;
+    var LETTER_IN_DUR = 260;
+    var LETTER_OUT_DUR = 160;
+
+    var IN_KEYFRAMES = [
+      { transform: 'translateY(16px)', opacity: 0 },
+      { transform: 'translateY(0px)', opacity: 1 }
+    ];
+
+    var OUT_KEYFRAMES = [
+      { transform: 'translateY(0px)', opacity: 1 },
+      { transform: 'translateY(-16px)', opacity: 0 }
+    ];
+
     loader.addEventListener("click", dismissLoader);
-    function step() {
-      if (!loader) return;
-      if (i >= nums.length) { dismissLoader(); return; }
-      numEl.textContent = nums[i];
-      var start = performance.now();
-      function sweepFrame(now) {
-        if (!loader) return;
-        var t = Math.min(1, (now - start) / stepMs);
-        sweep.style.background =
-          "conic-gradient(rgba(224,24,27,0.45) " + t * 360 + "deg, transparent " + t * 360 + "deg)";
-        if (t < 1) requestAnimationFrame(sweepFrame);
-        else { i++; step(); }
-      }
-      requestAnimationFrame(sweepFrame);
+
+    function buildWord(word) {
+      if (!stage) return [];
+      stage.innerHTML = '';
+      var letters = word.split('');
+      var spans = [];
+      letters.forEach(function (ch, idx) {
+        var span = document.createElement('span');
+        span.textContent = (ch === ' ') ? '\u00A0\u00A0' : ch;
+        if (idx >= letters.length - OUTLINE_LAST_N && ch !== ' ') {
+          span.classList.add('outline');
+        }
+        stage.appendChild(span);
+        spans.push(span);
+      });
+      return spans;
     }
-    step();
+
+    function animateIn(spans) {
+      return new Promise(function (resolve) {
+        var maxEnd = 0;
+        spans.forEach(function (el, idx) {
+          var delay = idx * LETTER_STAGGER;
+          el.style.opacity = '0';
+          try {
+            el.animate(IN_KEYFRAMES, {
+              duration: LETTER_IN_DUR,
+              delay: delay,
+              easing: 'cubic-bezier(.2,.8,.3,1)',
+              fill: 'forwards'
+            });
+          } catch (e) {
+            el.style.opacity = '1';
+          }
+          maxEnd = Math.max(maxEnd, delay + LETTER_IN_DUR);
+        });
+        setTimeout(resolve, maxEnd);
+      });
+    }
+
+    function animateOut(spans) {
+      return new Promise(function (resolve) {
+        var maxEnd = 0;
+        spans.forEach(function (el, idx) {
+          var delay = idx * EXIT_STAGGER;
+          try {
+            el.animate(OUT_KEYFRAMES, {
+              duration: LETTER_OUT_DUR,
+              delay: delay,
+              easing: 'cubic-bezier(.6,0,.9,.3)',
+              fill: 'forwards'
+            });
+          } catch (e) {
+            el.style.opacity = '0';
+          }
+          maxEnd = Math.max(maxEnd, delay + LETTER_OUT_DUR);
+        });
+        setTimeout(resolve, maxEnd);
+      });
+    }
+
+    function wait(ms) {
+      return new Promise(function (r) { setTimeout(r, ms); });
+    }
+
+    var chain = Promise.resolve();
+    WORDS.forEach(function (word) {
+      chain = chain.then(function () {
+        if (!loader) return;
+        var spans = buildWord(word);
+        return animateIn(spans).then(function () {
+          return wait(HOLD_TIME);
+        }).then(function () {
+          return animateOut(spans);
+        });
+      });
+    });
+
+    chain.then(function () {
+      if (!loader) return;
+      if (stage) stage.style.opacity = '0';
+      loader.classList.add("reveal-active");
+      return wait(1100);
+    }).then(function () {
+      dismissLoader();
+    });
   }
 
   /* ---------- scroll reveals ---------- */
