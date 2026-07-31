@@ -86,138 +86,29 @@ import portfolioData from './data/portfolio.json';
   // Render before selecting DOM components
   renderPortfolio();
 
-  /* ---------- camera shutter audio player (mixkit-camera-shutter-hard-click-1430) ---------- */
-  var cameraClickAudio = null;
-  try {
-    cameraClickAudio = document.getElementById("shutter-audio-element");
-    if (!cameraClickAudio) {
-      cameraClickAudio = new Audio("/camera-click.mp3");
-      cameraClickAudio.preload = "auto";
-    }
-  } catch (e) {}
+  /* ---------- loader: kinetic typography, audio & logo reveal ---------- */
+  var loader = document.getElementById("loader");
+  var loaderAudio = null;
 
-  var globalAudioCtx = null;
-  function getAudioContext() {
-    if (!globalAudioCtx) {
-      var AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) {
-        globalAudioCtx = new AudioCtx();
-      }
+  function getLoaderAudio() {
+    if (!loaderAudio) {
+      loaderAudio = new Audio("/camera-shutter.wav");
+      loaderAudio.preload = "auto";
     }
-    if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
-      globalAudioCtx.resume().catch(function(){});
-    }
-    return globalAudioCtx;
+    return loaderAudio;
   }
 
-  function autoPrewarmAudio() {
-    getAudioContext();
-    if (cameraClickAudio) {
+  function stopLoaderAudio() {
+    if (loaderAudio) {
       try {
-        cameraClickAudio.load();
+        loaderAudio.pause();
+        loaderAudio.currentTime = 0;
       } catch (e) {}
     }
   }
 
-  // Fire pre-warmer automatically immediately on load, DOMContentLoaded, and first pointer/scroll
-  autoPrewarmAudio();
-  if (document.readyState === "complete" || document.readyState === "interactive") {
-    setTimeout(autoPrewarmAudio, 5);
-  } else {
-    document.addEventListener("DOMContentLoaded", autoPrewarmAudio);
-    window.addEventListener("load", autoPrewarmAudio);
-  }
-  window.addEventListener("mousemove", autoPrewarmAudio, { passive: true });
-  window.addEventListener("pointerdown", autoPrewarmAudio, { passive: true });
-  window.addEventListener("touchstart", autoPrewarmAudio, { passive: true });
-  window.addEventListener("scroll", autoPrewarmAudio, { passive: true });
-
-  function playCameraShutterSound() {
-    autoPrewarmAudio();
-    if (cameraClickAudio) {
-      try {
-        var snd = cameraClickAudio.cloneNode();
-        snd.volume = 0.95;
-        var p = snd.play();
-        if (p !== undefined) {
-          p.catch(function() {
-            synthShutter();
-          });
-        }
-      } catch (e) {
-        synthShutter();
-      }
-    } else {
-      synthShutter();
-    }
-  }
-
-  function synthShutter() {
-    try {
-      var ctx = getAudioContext();
-      if (!ctx) return;
-      if (ctx.state === 'suspended') {
-        ctx.resume().then(function() { doSynth(ctx); }).catch(function(){});
-      } else {
-        doSynth(ctx);
-      }
-    } catch (e) {}
-  }
-
-  function doSynth(ctx) {
-    try {
-      var now = ctx.currentTime;
-      var bufSize = Math.floor(ctx.sampleRate * 0.045);
-      var buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-      var data = buf.getChannelData(0);
-      for (var i = 0; i < bufSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.12));
-      }
-      var noise = ctx.createBufferSource();
-      noise.buffer = buf;
-
-      var filter = ctx.createBiquadFilter();
-      filter.type = 'highpass';
-      filter.frequency.setValueAtTime(2000, now);
-
-      var gain = ctx.createGain();
-      gain.gain.setValueAtTime(0.7, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-
-      noise.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-      noise.start(now);
-      noise.stop(now + 0.045);
-
-      var buf2Size = Math.floor(ctx.sampleRate * 0.035);
-      var buf2 = ctx.createBuffer(1, buf2Size, ctx.sampleRate);
-      var data2 = buf2.getChannelData(0);
-      for (var j = 0; j < buf2Size; j++) {
-        data2[j] = (Math.random() * 2 - 1) * Math.exp(-j / (buf2Size * 0.1));
-      }
-      var noise2 = ctx.createBufferSource();
-      noise2.buffer = buf2;
-
-      var filter2 = ctx.createBiquadFilter();
-      filter2.type = 'highpass';
-      filter2.frequency.setValueAtTime(2800, now + 0.04);
-
-      var gain2 = ctx.createGain();
-      gain2.gain.setValueAtTime(0.6, now + 0.04);
-      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
-
-      noise2.connect(filter2);
-      filter2.connect(gain2);
-      gain2.connect(ctx.destination);
-      noise2.start(now + 0.04);
-      noise2.stop(now + 0.075);
-    } catch (e) {}
-  }
-
-  /* ---------- loader: kinetic typography & logo reveal ---------- */
-  var loader = document.getElementById("loader");
   function dismissLoader() {
+    stopLoaderAudio();
     if (!loader || loader.classList.contains("gone")) return;
     loader.classList.add("gone");
     setTimeout(function () { loader.remove(); loader = null; }, 800);
@@ -228,6 +119,7 @@ import portfolioData from './data/portfolio.json';
     if (!loader) { startHeroReveal(); return; }
     if (reduceMotion || document.body.dataset.loader === "off") { dismissLoader(); return; }
 
+    stopLoaderAudio();
     var stage = document.getElementById("word-stage");
     var WORDS = ["WE", "MAKE", "BRANDS", "TALK"];
     var OUTLINE_LAST_N = 2;
@@ -331,10 +223,19 @@ import portfolioData from './data/portfolio.json';
     WORDS.forEach(function (word) {
       chain = chain.then(function () {
         if (!loader) return;
-        if (word === "TALK") {
-          playCameraShutterSound();
-        }
         var spans = buildWord(word);
+
+        if (word === "TALK") {
+          var audio = getLoaderAudio();
+          audio.currentTime = 0;
+          var playPromise = audio.play();
+          if (playPromise && typeof playPromise.catch === "function") {
+            playPromise.catch(function () {
+              /* Browser autoplay restriction handled gracefully */
+            });
+          }
+        }
+
         return animateIn(spans).then(function () {
           return wait(HOLD_TIME);
         }).then(function () {
@@ -345,11 +246,11 @@ import portfolioData from './data/portfolio.json';
 
     chain.then(function () {
       if (!loader) return;
+      stopLoaderAudio();
       clearInterval(counterTimer);
       if (counterEl) counterEl.textContent = "100";
       if (stage) stage.style.opacity = '0';
       loader.classList.add("reveal-active");
-      playCameraShutterSound();
       return wait(900);
     }).then(function () {
       dismissLoader();
@@ -801,10 +702,10 @@ import portfolioData from './data/portfolio.json';
   if (navHeader) {
     var lastScrollY = window.scrollY;
     var scrollThreshold = 10;
-
+    
     window.addEventListener("scroll", function () {
       var currentScrollY = window.scrollY;
-
+      
       if (currentScrollY <= 10) {
         navHeader.classList.remove("nav-hidden");
       } else if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
@@ -812,7 +713,7 @@ import portfolioData from './data/portfolio.json';
       } else if (currentScrollY < lastScrollY) {
         navHeader.classList.remove("nav-hidden");
       }
-
+      
       lastScrollY = currentScrollY;
     }, { passive: true });
   }
