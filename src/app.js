@@ -86,9 +86,10 @@ import portfolioData from './data/portfolio.json';
   // Render before selecting DOM components
   renderPortfolio();
 
-  /* ---------- camera shutter audio player (mixkit-camera-shutter-hard-click-1430) ---------- */
-  var shutterAudio = new Audio("/camera-click.mp3");
+  /* ---------- camera shutter audio player (mixkit-camera-shutter-hard-click-1430 Base64) ---------- */
+  var shutterAudio = new Audio(SHUTTER_B64);
   shutterAudio.preload = "auto";
+  shutterAudio.volume = 0.85;
 
   var globalAudioCtx = null;
   function getAudioContext() {
@@ -107,13 +108,22 @@ import portfolioData from './data/portfolio.json';
   function unlockAudio() {
     try {
       shutterAudio.load();
+      var p = shutterAudio.play();
+      if (p !== undefined) {
+        p.then(function() {
+          shutterAudio.pause();
+          shutterAudio.currentTime = 0;
+        }).catch(function(){});
+      }
     } catch (e) {}
     getAudioContext();
   }
+
   window.addEventListener("pointerdown", unlockAudio, { passive: true, once: true });
   window.addEventListener("touchstart", unlockAudio, { passive: true, once: true });
   window.addEventListener("keydown", unlockAudio, { passive: true, once: true });
   window.addEventListener("mousemove", unlockAudio, { passive: true, once: true });
+  window.addEventListener("scroll", unlockAudio, { passive: true, once: true });
 
   function playCameraShutterSound() {
     try {
@@ -122,30 +132,17 @@ import portfolioData from './data/portfolio.json';
       var playPromise = soundClone.play();
       if (playPromise !== undefined) {
         playPromise.catch(function () {
-          var ctx = getAudioContext();
-          if (ctx) {
-            if (ctx.state === 'suspended') ctx.resume();
-            var now = ctx.currentTime;
-            var bufferSize = Math.floor(ctx.sampleRate * 0.04);
-            var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            var output = buffer.getChannelData(0);
-            for (var i = 0; i < bufferSize; i++) {
-              output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.1));
-            }
-            var whiteNoise = ctx.createBufferSource();
-            whiteNoise.buffer = buffer;
-            var filter = ctx.createBiquadFilter();
-            filter.type = 'highpass';
-            filter.frequency.setValueAtTime(2200, now);
-            var gain = ctx.createGain();
-            gain.gain.setValueAtTime(0.5, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-            whiteNoise.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
-            whiteNoise.start(now);
-            whiteNoise.stop(now + 0.04);
-          }
+          var playOnGesture = function() {
+            var s = shutterAudio.cloneNode();
+            s.volume = 0.85;
+            s.play().catch(function(){});
+            window.removeEventListener("mousemove", playOnGesture);
+            window.removeEventListener("pointerdown", playOnGesture);
+            window.removeEventListener("touchstart", playOnGesture);
+          };
+          window.addEventListener("mousemove", playOnGesture, { passive: true, once: true });
+          window.addEventListener("pointerdown", playOnGesture, { passive: true, once: true });
+          window.addEventListener("touchstart", playOnGesture, { passive: true, once: true });
         });
       }
     } catch (e) {
