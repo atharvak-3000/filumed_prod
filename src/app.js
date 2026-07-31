@@ -739,10 +739,10 @@ import portfolioData from './data/portfolio.json';
   if (navHeader) {
     var lastScrollY = window.scrollY;
     var scrollThreshold = 10;
-    
+
     window.addEventListener("scroll", function () {
       var currentScrollY = window.scrollY;
-      
+
       if (currentScrollY <= 10) {
         navHeader.classList.remove("nav-hidden");
       } else if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
@@ -750,7 +750,7 @@ import portfolioData from './data/portfolio.json';
       } else if (currentScrollY < lastScrollY) {
         navHeader.classList.remove("nav-hidden");
       }
-      
+
       lastScrollY = currentScrollY;
     }, { passive: true });
   }
