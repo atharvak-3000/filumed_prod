@@ -89,8 +89,11 @@ import portfolioData from './data/portfolio.json';
   /* ---------- camera shutter audio player (mixkit-camera-shutter-hard-click-1430) ---------- */
   var cameraClickAudio = null;
   try {
-    cameraClickAudio = new Audio("/camera-click.mp3");
-    cameraClickAudio.preload = "auto";
+    cameraClickAudio = document.getElementById("shutter-audio-element");
+    if (!cameraClickAudio) {
+      cameraClickAudio = new Audio("/camera-click.mp3");
+      cameraClickAudio.preload = "auto";
+    }
   } catch (e) {}
 
   var globalAudioCtx = null;
@@ -107,28 +110,37 @@ import portfolioData from './data/portfolio.json';
     return globalAudioCtx;
   }
 
-  function unlockAudio() {
-    if (cameraClickAudio) {
-      try { cameraClickAudio.load(); } catch (e) {}
-    }
+  function autoPrewarmAudio() {
     getAudioContext();
+    if (cameraClickAudio) {
+      try {
+        cameraClickAudio.load();
+      } catch (e) {}
+    }
   }
-  window.addEventListener("pointerdown", unlockAudio, { passive: true });
-  window.addEventListener("touchstart", unlockAudio, { passive: true });
-  window.addEventListener("keydown", unlockAudio, { passive: true });
-  window.addEventListener("mousemove", unlockAudio, { passive: true });
+
+  // Fire pre-warmer automatically immediately on load, DOMContentLoaded, and first pointer/scroll
+  autoPrewarmAudio();
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    setTimeout(autoPrewarmAudio, 5);
+  } else {
+    document.addEventListener("DOMContentLoaded", autoPrewarmAudio);
+    window.addEventListener("load", autoPrewarmAudio);
+  }
+  window.addEventListener("mousemove", autoPrewarmAudio, { passive: true });
+  window.addEventListener("pointerdown", autoPrewarmAudio, { passive: true });
+  window.addEventListener("touchstart", autoPrewarmAudio, { passive: true });
+  window.addEventListener("scroll", autoPrewarmAudio, { passive: true });
 
   function playCameraShutterSound() {
-    var played = false;
+    autoPrewarmAudio();
     if (cameraClickAudio) {
       try {
         var snd = cameraClickAudio.cloneNode();
-        snd.volume = 0.9;
+        snd.volume = 0.95;
         var p = snd.play();
         if (p !== undefined) {
-          p.then(function() {
-            played = true;
-          }).catch(function() {
+          p.catch(function() {
             synthShutter();
           });
         }
