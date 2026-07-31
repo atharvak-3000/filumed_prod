@@ -722,5 +722,17 @@ import portfolioData from './data/portfolio.json';
   /* ---------- boot ---------- */
   initDynamicInteractiveElements();
   initReveals();
+  // Camera shutter audio trigger on "Start a project" CTA click
+  document.querySelectorAll('a[href^="mailto:"], .cta a.btn').forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var audio = getLoaderAudio();
+      audio.currentTime = 0;
+      var playPromise = audio.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(function () {});
+      }
+    });
+  });
+
   runLoader();
 })();
