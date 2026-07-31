@@ -86,7 +86,10 @@ import portfolioData from './data/portfolio.json';
   // Render before selecting DOM components
   renderPortfolio();
 
-  /* ---------- audio context pre-warmer for 100% reliable camera click on reload ---------- */
+  /* ---------- camera shutter audio player (mixkit-camera-shutter-hard-click-1430) ---------- */
+  var shutterAudio = new Audio("/camera-click.mp3");
+  shutterAudio.preload = "auto";
+
   var globalAudioCtx = null;
   function getAudioContext() {
     if (!globalAudioCtx) {
@@ -102,6 +105,9 @@ import portfolioData from './data/portfolio.json';
   }
 
   function unlockAudio() {
+    try {
+      shutterAudio.load();
+    } catch (e) {}
     getAudioContext();
   }
   window.addEventListener("pointerdown", unlockAudio, { passive: true, once: true });
@@ -111,60 +117,36 @@ import portfolioData from './data/portfolio.json';
 
   function playCameraShutterSound() {
     try {
-      var ctx = getAudioContext();
-      if (!ctx) return;
-
-      var playAudio = function() {
-        var now = ctx.currentTime;
-        function playSnap(time, pitch, duration, volume) {
-          var bufferSize = Math.floor(ctx.sampleRate * duration);
-          var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-          var output = buffer.getChannelData(0);
-          for (var i = 0; i < bufferSize; i++) {
-            output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.12));
+      var soundClone = shutterAudio.cloneNode();
+      soundClone.volume = 0.85;
+      var playPromise = soundClone.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(function () {
+          var ctx = getAudioContext();
+          if (ctx) {
+            if (ctx.state === 'suspended') ctx.resume();
+            var now = ctx.currentTime;
+            var bufferSize = Math.floor(ctx.sampleRate * 0.04);
+            var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            var output = buffer.getChannelData(0);
+            for (var i = 0; i < bufferSize; i++) {
+              output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.1));
+            }
+            var whiteNoise = ctx.createBufferSource();
+            whiteNoise.buffer = buffer;
+            var filter = ctx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(2200, now);
+            var gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.5, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+            whiteNoise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            whiteNoise.start(now);
+            whiteNoise.stop(now + 0.04);
           }
-          var whiteNoise = ctx.createBufferSource();
-          whiteNoise.buffer = buffer;
-
-          var filter = ctx.createBiquadFilter();
-          filter.type = 'highpass';
-          filter.frequency.setValueAtTime(pitch, time);
-
-          var gain = ctx.createGain();
-          gain.gain.setValueAtTime(volume, time);
-          gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-
-          whiteNoise.connect(filter);
-          filter.connect(gain);
-          gain.connect(ctx.destination);
-
-          whiteNoise.start(time);
-          whiteNoise.stop(time + duration);
-
-          var osc = ctx.createOscillator();
-          var oscGain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(180, time);
-          osc.frequency.exponentialRampToValueAtTime(30, time + duration);
-
-          oscGain.gain.setValueAtTime(volume * 0.6, time);
-          oscGain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-
-          osc.connect(oscGain);
-          oscGain.connect(ctx.destination);
-
-          osc.start(time);
-          osc.stop(time + duration);
-        }
-
-        playSnap(now, 2000, 0.035, 0.55);
-        playSnap(now + 0.045, 2600, 0.03, 0.45);
-      };
-
-      if (ctx.state === 'suspended') {
-        ctx.resume().then(playAudio).catch(function(){});
-      } else {
-        playAudio();
+        });
       }
     } catch (e) {
       // Audio fallback
