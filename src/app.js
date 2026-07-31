@@ -211,12 +211,71 @@ import portfolioData from './data/portfolio.json';
       });
     });
 
+  function playCameraShutterSound() {
+    try {
+      var AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      var ctx = new AudioCtx();
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+      var now = ctx.currentTime;
+
+      function playSnap(time, pitch, duration, volume) {
+        var bufferSize = Math.floor(ctx.sampleRate * duration);
+        var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        var output = buffer.getChannelData(0);
+        for (var i = 0; i < bufferSize; i++) {
+          output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
+        }
+        var whiteNoise = ctx.createBufferSource();
+        whiteNoise.buffer = buffer;
+
+        var filter = ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(pitch, time);
+
+        var gain = ctx.createGain();
+        gain.gain.setValueAtTime(volume, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+        whiteNoise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        whiteNoise.start(time);
+        whiteNoise.stop(time + duration);
+
+        var osc = ctx.createOscillator();
+        var oscGain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(160, time);
+        osc.frequency.exponentialRampToValueAtTime(40, time + duration);
+
+        oscGain.gain.setValueAtTime(volume * 0.5, time);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+        osc.connect(oscGain);
+        oscGain.connect(ctx.destination);
+
+        osc.start(time);
+        osc.stop(time + duration);
+      }
+
+      playSnap(now, 1800, 0.035, 0.45);
+      playSnap(now + 0.045, 2400, 0.03, 0.4);
+    } catch (e) {
+      // Audio fallback
+    }
+  }
+
     chain.then(function () {
       if (!loader) return;
       clearInterval(counterTimer);
       if (counterEl) counterEl.textContent = "100";
       if (stage) stage.style.opacity = '0';
       loader.classList.add("reveal-active");
+      playCameraShutterSound();
       return wait(900);
     }).then(function () {
       dismissLoader();
