@@ -91,7 +91,7 @@ import portfolioData from './data/portfolio.json';
   function dismissLoader() {
     if (!loader || loader.classList.contains("gone")) return;
     loader.classList.add("gone");
-    setTimeout(function () { loader.remove(); loader = null; }, 800);
+    setTimeout(function () { loader.remove(); loader = null; }, 600);
     startHeroReveal();
   }
 
@@ -114,13 +114,13 @@ import portfolioData from './data/portfolio.json';
         counterEl.textContent = (counterVal < 10 ? '0' : '') + counterVal;
       }
       counterVal += 1;
-    }, 16);
+    }, 10);
 
-    var LETTER_STAGGER = 18;
-    var HOLD_TIME = 180;
-    var EXIT_STAGGER = 12;
-    var LETTER_IN_DUR = 180;
-    var LETTER_OUT_DUR = 120;
+    var LETTER_STAGGER = 13;
+    var HOLD_TIME = 120;
+    var EXIT_STAGGER = 8;
+    var LETTER_IN_DUR = 130;
+    var LETTER_OUT_DUR = 90;
 
     var IN_KEYFRAMES = [
       { transform: 'translateY(16px)', opacity: 0 },
@@ -217,7 +217,7 @@ import portfolioData from './data/portfolio.json';
       if (counterEl) counterEl.textContent = "100";
       if (stage) stage.style.opacity = '0';
       loader.classList.add("reveal-active");
-      return wait(900);
+      return wait(600);
     }).then(function () {
       dismissLoader();
     });
