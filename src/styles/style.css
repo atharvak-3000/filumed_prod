@@ -1059,7 +1059,7 @@ body[data-dir="editorial"] .marquee-track .dot {
 }
 
 .about-grid h2 {
-  font-size: clamp(40px, 4.6vw, 78px);
+  font-size: clamp(28px, 3.2vw, 52px);
   margin-top: 22px;
 }
 
