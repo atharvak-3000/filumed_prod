@@ -365,19 +365,10 @@ body[data-bg="crimson"] .marquee-track .item {
   color: #ffffff !important;
 }
 
-body[data-bg="grain"] .accent,
-body[data-bg="grain"] .accent-w,
-body[data-bg="grain"] .l2,
 body[data-bg="grain"] .stat .num sup,
 body[data-bg="grain"] .ph-tag,
-body[data-bg="stars"] .accent,
-body[data-bg="stars"] .accent-w,
-body[data-bg="stars"] .l2,
 body[data-bg="stars"] .stat .num sup,
 body[data-bg="stars"] .ph-tag,
-body[data-bg="crimson"] .accent,
-body[data-bg="crimson"] .accent-w,
-body[data-bg="crimson"] .l2,
 body[data-bg="crimson"] .stat .num sup,
 body[data-bg="crimson"] .ph-tag {
   color: #ffffff !important;
@@ -517,8 +508,14 @@ body[data-dir="editorial"] .display {
   color: var(--accent);
 }
 
-.accent {
+.accent,
+.accent-w {
   color: var(--accent);
+}
+
+body[data-dir="editorial"] .accent-w {
+  font-style: italic;
+  font-weight: 350;
 }
 
 body[data-dir="swiss"] .mono.kicker {
@@ -875,13 +872,13 @@ body[data-dir="swiss"] .hero-inner {
   }
 }
 
-.hero h1 .l2 {
-  color: var(--accent);
-}
-
-body[data-dir="editorial"] .hero h1 .l2 {
-  font-style: italic;
-  font-weight: 350;
+.hero h1 .l2,
+.hero h1 .accent-w,
+.display .accent-w,
+.accent-w {
+  color: #ffffff !important;
+  font-style: italic !important;
+  font-weight: 350 !important;
 }
 
 .hero p.sub {
@@ -2428,7 +2425,16 @@ body[data-dir="swiss"] .video-ratio-box {
 }
 
 .bento-header-wrap {
+  margin-bottom: 16px;
+}
+
+.bento-filters {
+  margin-top: 24px;
   margin-bottom: 36px;
+}
+
+.bento-img-tile.hidden {
+  display: none !important;
 }
 
 .bento-image-grid {

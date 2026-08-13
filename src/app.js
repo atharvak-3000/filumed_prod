@@ -413,6 +413,35 @@ import portfolioData from './data/portfolio.json';
     return data;
   }
 
+  var bentoCategoryTitles = {
+    "brand-films": "Brand & Automotive",
+    "events": "Live & Events",
+    "commercial": "Commercial",
+    "color-grading": "Color Grading",
+    "cinematography": "Cinematography",
+    "music-videos": "Music Videos",
+    "documentary": "Documentary"
+  };
+
+  function renderBentoFilters() {
+    var bentoFiltersContainer = document.getElementById("bento-filters-container");
+    var bentoTiles = document.querySelectorAll(".bento-image-grid .bento-img-tile");
+    if (!bentoFiltersContainer || !bentoTiles.length) return;
+
+    var categories = {};
+    bentoTiles.forEach(function (tile) {
+      var cat = tile.getAttribute("data-cat");
+      if (cat) categories[cat] = true;
+    });
+
+    var filterHtml = '<button class="chip on" data-filter="all">All</button>';
+    Object.keys(categories).forEach(function (cat) {
+      var label = bentoCategoryTitles[cat] || cat.replace(/-/g, ' ');
+      filterHtml += '<button class="chip" data-filter="' + cat + '">' + label + '</button>';
+    });
+    bentoFiltersContainer.innerHTML = filterHtml;
+  }
+
   function initDynamicInteractiveElements() {
     var workSection = document.getElementById("work");
     if (workSection) {
@@ -426,6 +455,59 @@ import portfolioData from './data/portfolio.json';
           child.style.setProperty("--rv-i", n);
         });
       }
+
+      var workChips = workSection.querySelectorAll(".filters .chip");
+      var workCards = workSection.querySelectorAll(".work-grid .card");
+      workChips.forEach(function (chip) {
+        var newChip = chip.cloneNode(true);
+        chip.parentNode.replaceChild(newChip, chip);
+
+        newChip.addEventListener("click", function () {
+          workSection.querySelectorAll(".filters .chip").forEach(function (c) { c.classList.remove("on"); });
+          newChip.classList.add("on");
+          var f = newChip.dataset.filter;
+          workCards.forEach(function (card) {
+            var show = f === "all" || card.dataset.cat === f;
+            card.classList.toggle("hidden", !show);
+            if (show) {
+              card.classList.remove("in");
+              card.style.setProperty("--rv-i", 0);
+              requestAnimationFrame(function () {
+                requestAnimationFrame(function () { card.classList.add("in"); });
+              });
+            }
+          });
+        });
+      });
+    }
+
+    var bentoSection = document.getElementById("bento");
+    if (bentoSection) {
+      renderBentoFilters();
+      var bentoChips = bentoSection.querySelectorAll(".filters .chip");
+      var bentoTiles = bentoSection.querySelectorAll(".bento-image-grid .bento-img-tile");
+
+      bentoChips.forEach(function (chip) {
+        var newChip = chip.cloneNode(true);
+        chip.parentNode.replaceChild(newChip, chip);
+
+        newChip.addEventListener("click", function () {
+          bentoSection.querySelectorAll(".filters .chip").forEach(function (c) { c.classList.remove("on"); });
+          newChip.classList.add("on");
+          var f = newChip.dataset.filter;
+          bentoTiles.forEach(function (tile) {
+            var show = f === "all" || tile.getAttribute("data-cat") === f;
+            tile.classList.toggle("hidden", !show);
+            if (show) {
+              tile.classList.remove("in");
+              tile.style.setProperty("--rv-i", 0);
+              requestAnimationFrame(function () {
+                requestAnimationFrame(function () { tile.classList.add("in"); });
+              });
+            }
+          });
+        });
+      });
     }
 
     document.querySelectorAll(".ph").forEach(function (ph) {
@@ -447,30 +529,6 @@ import portfolioData from './data/portfolio.json';
         img.alt = card.querySelector(".title") ? card.querySelector(".title").textContent : "Video thumbnail";
         ph.insertBefore(img, ph.firstChild);
       }
-    });
-
-    var chips = document.querySelectorAll(".chip");
-    var cards = document.querySelectorAll(".work-grid .card");
-    chips.forEach(function (chip) {
-      var newChip = chip.cloneNode(true);
-      chip.parentNode.replaceChild(newChip, chip);
-
-      newChip.addEventListener("click", function () {
-        document.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("on"); });
-        newChip.classList.add("on");
-        var f = newChip.dataset.filter;
-        cards.forEach(function (card) {
-          var show = f === "all" || card.dataset.cat === f;
-          card.classList.toggle("hidden", !show);
-          if (show) {
-            card.classList.remove("in");
-            card.style.setProperty("--rv-i", 0);
-            requestAnimationFrame(function () {
-              requestAnimationFrame(function () { card.classList.add("in"); });
-            });
-          }
-        });
-      });
     });
   }
 
